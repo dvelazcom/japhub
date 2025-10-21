@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subtitle Player for Manabi Reader</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            padding: 20px;
+            max-width: 1024px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .file-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .file-section h3 {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        button {
+            min-height: 44px;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background: #007AFF;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #0051D5;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        button.secondary {
+            background: #5856D6;
+        }
+        
+        button.success {
+            background: #34C759;
+        }
+        
+        .file-btn {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f4ff;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        #video-player {
+            width: 100%;
+            max-height: 500px;
+            background: black;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .player-container {
+            margin-top: 30px;
+        }
+        
+        .subtitle-display {
+            margin: 20px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border: 2px solid #007AFF;
+            border-radius: 8px;
+            font-size: 24px;
+            line-height: 1.8;
+            min-height: 120px;
+            text-align: center;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .subtitle-counter {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 12px 24px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #333;
+        }
+        
+        .manabi-actions {
+            margin: 30px 0;
+            padding: 20px;
+            background: #e8f4ff;
+            border-radius: 8px;
+        }
+        
+        .manabi-actions h3 {
+            margin-bottom: 15px;
+            color: #007AFF;
+        }
+        
+        .manabi-actions p {
+            margin-bottom: 15px;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .help-text {
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #856404;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        :root {
+            /* Primitive Color Tokens */
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-teal-800: rgba(41, 150, 161, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+
+            /* RGB versions for opacity control */
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-red-500-rgb: 192, 21, 47;
+            --color-red-400-rgb: 255, 84, 89;
+            --color-orange-500-rgb: 168, 75, 47;
+            --color-orange-400-rgb: 230, 129, 97;
+
+            /* Background color tokens (Light Mode) */
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+            --color-bg-5: rgba(147, 51, 234, 0.08);
+            --color-bg-6: rgba(249, 115, 22, 0.08);
+            --color-bg-7: rgba(236, 72, 153, 0.08);
+            --color-bg-8: rgba(6, 182, 212, 0.08);
+
+            /* Semantic Color Tokens (Light Mode) */
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-500);
+            --color-info: var(--color-slate-500);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+            /* Common style patterns */
+            --focus-ring: 0 0 0 3px var(--color-focus-ring);
+            --focus-outline: 2px solid var(--color-primary);
+            --status-bg-opacity: 0.15;
+            --status-border-opacity: 0.25;
+
+            /* Typography */
+            --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --font-size-4xl: 30px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --letter-spacing-tight: -0.01em;
+
+            /* Spacing */
+            --space-0: 0;
+            --space-1: 1px;
+            --space-2: 2px;
+            --space-4: 4px;
+            --space-6: 6px;
+            --space-8: 8px;
+            --space-10: 10px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            /* Shadows */
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+            /* Animation */
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📺 Subtitle Player for Manabi Reader</h1>
+        
+        <div class="file-section">
+            <h3>1. Select Video File</h3>
+            <button class="file-btn" id="select-video-btn">Choose Video</button>
+            <input type="file" id="video-file-input" accept="video/*" style="display: none;">
+            <div id="video-filename" class="file-info" style="display: none;"></div>
+        </div>
+        
+        <div class="file-section">
+            <h3>2. Select Subtitle File</h3>
+            <button class="file-btn" id="select-subtitle-btn">Choose Subtitle</button>
+            <input type="file" id="subtitle-file-input" accept="text/plain,.srt,.vtt,.txt,.ass,text/*,*/*" style="display: none;">
+            <div id="subtitle-filename" class="file-info" style="display: none;"></div>
+        </div>
+        
+        <button id="play-video-btn" class="file-btn" disabled>▶️ Load Video & Subtitles</button>
+        
+        <div id="player-container" class="player-container" style="display: none;">
+            <video id="video-player" controls></video>
+            
+            <div class="subtitle-display" id="subtitle-display">
+                Subtitles will appear here...
+            </div>
+            
+            <div class="controls">
+                <button id="prev-subtitle-btn">⬅️ Previous</button>
+                <span class="subtitle-counter" id="subtitle-counter">0 / 0</span>
+                <button id="next-subtitle-btn">Next ➡️</button>
+            </div>
+            
+            <div class="manabi-actions">
+                <h3>📱 Use with Manabi Reader</h3>
+                <p>Copy subtitle text and paste into Manabi Reader for Japanese parsing, word lookup, and Anki flashcard creation.</p>
+                
+                <div class="button-group">
+                    <button id="copy-current-btn" class="success">📋 Copy Current Subtitle</button>
+                    <button id="copy-all-btn" class="success">📋 Copy All Subtitles</button>btitles</button>
+                    <button id="view-subtitles-btn" class="secondary">🔍 View All in New Tab</button>
+                </div>
+                
+                <div class="help-text">
+                    💡 <strong>How to use:</strong><br>
+                    1. Click "Copy Current Subtitle" or "Copy All Subtitles"<br>
+                    2. Open Manabi Reader on your iPad<br>
+                    3. Paste the text into Manabi Reader<br>
+                    4. Use Manabi Reader's parsing and Anki integration
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let selectedVideo = null;
+        let selectedSubtitle = null;
+        let subtitles = [];
+        let currentSubIndex = 0;
+        let allSubtitleText = '';
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            attachEventListeners();
+        });
+
+        function attachEventListeners() {
+            document.getElementById('select-video-btn').addEventListener('click', () => {
+                document.getElementById('video-file-input').click();
+            });
+            
+            document.getElementById('select-subtitle-btn').addEventListener('click', () => {
+                document.getElementById('subtitle-file-input').click();
+            });
+            
+            document.getElementById('video-file-input').addEventListener('change', handleVideoSelect);
+            document.getElementById('subtitle-file-input').addEventListener('change', handleSubtitleSelect);
+            document.getElementById('play-video-btn').addEventListener('click', loadPlayer);
+            
+            document.getElementById('prev-subtitle-btn').addEventListener('click', prevSubtitle);
+            document.getElementById('next-subtitle-btn').addEventListener('click', nextSubtitle);
+            
+            document.getElementById('copy-current-btn').addEventListener('click', copyCurrentSubtitle);
+            document.getElementById('copy-all-btn').addEventListener('click', copyAllSubtitles);
+            document.getElementById('view-subtitles-btn').addEventListener('click', viewSubtitlesInNewTab);
+        }
+
+        function handleVideoSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedVideo = file;
+                const info = document.getElementById('video-filename');
+                info.textContent = `✓ ${file.name}`;
+                info.style.display = 'block';
+                checkLoadButton();
+            }
+        }
+
+        async function handleSubtitleSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedSubtitle = file;
+                const info = document.getElementById('subtitle-filename');
+                info.textContent = `✓ ${file.name}`;
+                info.style.display = 'block';
+                
+                const text = await file.text();
+                allSubtitleText = text;
+                subtitles = parseSRT(text);
+                
+                info.textContent += ` (${subtitles.length} subtitles loaded)`;
+                checkLoadButton();
+            }
+        }
+
+        function checkLoadButton() {
+            const loadBtn = document.getElementById('play-video-btn');
+            if (selectedVideo && selectedSubtitle && subtitles.length > 0) {
+                loadBtn.disabled = false;
+            }
+        }
+
+        function parseSRT(text) {
+            // Parse SRT format
+            const blocks = text.trim().split(/\n\s*\n/);
+            const parsed = [];
+            
+            blocks.forEach(block => {
+                const lines = block.split('\n');
+                if (lines.length >= 3) {
+                    // Line 0: index
+                    // Line 1: timestamp
+                    // Line 2+: text
+                    
+                    const timeMatch = lines[1].match(/(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})/);
+                    if (timeMatch) {
+                        const startTime = parseTimestamp(timeMatch[1], timeMatch[2], timeMatch[3], timeMatch[4]);
+                        const endTime = parseTimestamp(timeMatch[5], timeMatch[6], timeMatch[7], timeMatch[8]);
+                        const text = lines.slice(2).join(' ').trim();
+                        
+                        parsed.push({
+                            start: startTime,
+                            end: endTime,
+                            text: text
+                        });
+                    }
+                }
+            });
+            
+            return parsed;
+        }
+
+        function parseTimestamp(hours, minutes, seconds, milliseconds) {
+            return (parseInt(hours) * 3600) + (parseInt(minutes) * 60) + parseInt(seconds) + (parseInt(milliseconds) / 1000);
+        }
+
+        function loadPlayer() {
+            const video = document.getElementById('video-player');
+            video.src = URL.createObjectURL(selectedVideo);
+            
+            document.getElementById('player-container').style.display = 'block';
+            
+            currentSubIndex = 0;
+            displaySubtitle(currentSubIndex);
+            
+            // Scroll to player
+            document.getElementById('player-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displaySubtitle(index) {
+            if (index < 0 || index >= subtitles.length) return;
+            
+            const subtitle = subtitles[index];
+            document.getElementById('subtitle-display').textContent = subtitle.text;
+            document.getElementById('subtitle-counter').textContent = `${index + 1} / ${subtitles.length}`;
+        }
+
+        function prevSubtitle() {
+            if (currentSubIndex > 0) {
+                currentSubIndex--;
+                displaySubtitle(currentSubIndex);
+                seekToSubtitle(currentSubIndex);
+            }
+        }
+
+        function nextSubtitle() {
+            if (currentSubIndex < subtitles.length - 1) {
+                currentSubIndex++;
+                displaySubtitle(currentSubIndex);
+                seekToSubtitle(currentSubIndex);
+            }
+        }
+
+        function seekToSubtitle(index) {
+            const video = document.getElementById('video-player');
+            const subtitle = subtitles[index];
+            if (subtitle && subtitle.start !== undefined) {
+                video.currentTime = subtitle.start;
+            }
+        }
+
+        // Manabi Reader Integration
+        function copyCurrentSubtitle() {
+            const subtitle = subtitles[currentSubIndex];
+            if (subtitle) {
+                copyToClipboard(subtitle.text);
+                alert('✓ Current subtitle copied to clipboard!\n\nPaste it into Manabi Reader.');
+            }
+        }
+
+        function copyAllSubtitles() {
+            if (allSubtitleText) {
+                copyToClipboard(allSubtitleText);
+                alert('✓ All subtitles copied to clipboard!\n\nPaste into Manabi Reader to parse the entire text.');
+            }
+        }
+
+        function viewSubtitlesInNewTab() {
+            const textOnly = subtitles.map(s => s.text).join('\n\n');
+            const blob = new Blob([textOnly], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }
+
+        function copyToClipboard(text) {
+            // Modern clipboard API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).catch(err => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+    </script>
+</body>
+</html>
+    </script>
+</body>
+</html>
