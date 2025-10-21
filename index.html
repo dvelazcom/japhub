@@ -37,7 +37,8 @@
             overflow: hidden; /* CRITICAL: Prevents scrolling */
         }
         
-        .video-container {
+        .video-wrapper {
+            position: relative;
             flex-shrink: 0;
             margin-bottom: 20px;
         }
@@ -48,6 +49,28 @@
             max-height: 60vh;
             background: #000;
             border-radius: 8px;
+            display: block;
+        }
+        
+        /* Video Closed Captions Overlay */
+        .video-subtitle-overlay {
+            position: absolute;
+            bottom: 60px; /* Above video controls */
+            left: 0;
+            right: 0;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 20px;
+            line-height: 1.4;
+            text-align: center;
+            pointer-events: none;
+            border-radius: 4px;
+            margin: 0 10px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .controls {
@@ -88,10 +111,10 @@
             color: #98989d;
         }
         
-        /* THIS is the scrollable container */
+        /* Scrollable content area - simple flex: 1 */
         .transcript-content {
             flex: 1;
-            overflow-y: auto; /* ONLY this scrolls */
+            overflow-y: auto;
             overflow-x: hidden;
             padding: 20px;
             scroll-behavior: smooth;
@@ -264,6 +287,16 @@
             #video-player {
                 max-height: 40vh;
             }
+            
+            .video-subtitle-overlay {
+                font-size: 16px;
+                bottom: 50px;
+            }
+            
+            /* No positioning fixes needed with flexbox */
+            .transcript-header {
+                padding-top: calc(15px + env(safe-area-inset-top));
+            }
         }
         
         :root {
@@ -428,8 +461,10 @@
     <div id="player-screen" class="container" style="display: none;">
         <!-- Video Panel - FIXED -->
         <div class="video-panel">
-            <div class="video-container">
+            <div class="video-wrapper">
                 <video id="video-player" controls></video>
+                <!-- CC Overlay on Video -->
+                <div class="video-subtitle-overlay" id="video-cc"></div>
             </div>
             
             <div class="controls">
@@ -624,6 +659,12 @@
             // Update counter
             document.getElementById('subtitle-counter').textContent = `${currentIndex + 1} / ${subtitles.length}`;
             
+            // Update video CC overlay
+            const ccElement = document.getElementById('video-cc');
+            if (subtitles[currentIndex]) {
+                ccElement.textContent = subtitles[currentIndex].text;
+            }
+            
             // Update transcript highlighting
             const items = document.querySelectorAll('.transcript-item');
             items.forEach((item, index) => {
@@ -631,13 +672,12 @@
                 
                 if (index === currentIndex) {
                     item.classList.add('active');
-                    // Scroll ONLY the transcript container
+                    // Scroll transcript
                     const transcriptContainer = document.getElementById('transcript-content');
                     const itemTop = item.offsetTop;
                     const itemHeight = item.offsetHeight;
                     const containerHeight = transcriptContainer.clientHeight;
                     
-                    // Center the active item
                     const scrollTo = itemTop - (containerHeight / 2) + (itemHeight / 2);
                     transcriptContainer.scrollTo({
                         top: scrollTo,
