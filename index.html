@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Vocab Miner</title>
+    <style>
+        :root {
+            /* Primitive Color Tokens */
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-teal-800: rgba(41, 150, 161, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+
+            /* RGB versions for opacity control */
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-red-500-rgb: 192, 21, 47;
+            --color-red-400-rgb: 255, 84, 89;
+            --color-orange-500-rgb: 168, 75, 47;
+            --color-orange-400-rgb: 230, 129, 97;
+
+            /* Background color tokens (Light Mode) */
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+            --color-bg-5: rgba(147, 51, 234, 0.08);
+            --color-bg-6: rgba(249, 115, 22, 0.08);
+            --color-bg-7: rgba(236, 72, 153, 0.08);
+            --color-bg-8: rgba(6, 182, 212, 0.08);
+
+            /* Semantic Color Tokens (Light Mode) */
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-500);
+            --color-info: var(--color-slate-500);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+            /* Common style patterns */
+            --focus-ring: 0 0 0 3px var(--color-focus-ring);
+            --focus-outline: 2px solid var(--color-primary);
+            --status-bg-opacity: 0.15;
+            --status-border-opacity: 0.25;
+
+            /* Typography */
+            --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --font-size-4xl: 30px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --letter-spacing-tight: -0.01em;
+
+            /* Spacing */
+            --space-0: 0;
+            --space-1: 1px;
+            --space-2: 2px;
+            --space-4: 4px;
+            --space-6: 6px;
+            --space-8: 8px;
+            --space-10: 10px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            /* Shadows */
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+            /* Animation */
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Dark mode colors */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-200-rgb: 245, 245, 245;
+
+                --color-bg-1: rgba(29, 78, 216, 0.15);
+                --color-bg-2: rgba(180, 83, 9, 0.15);
+                --color-bg-3: rgba(21, 128, 61, 0.15);
+                --color-bg-4: rgba(185, 28, 28, 0.15);
+                --color-bg-5: rgba(107, 33, 168, 0.15);
+                --color-bg-6: rgba(194, 65, 12, 0.15);
+                --color-bg-7: rgba(190, 24, 93, 0.15);
+                --color-bg-8: rgba(8, 145, 178, 0.15);
+
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-primary-active: var(--color-teal-800);
+                --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+                --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+                --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-error: var(--color-red-400);
+                --color-success: var(--color-teal-300);
+                --color-warning: var(--color-orange-400);
+                --color-info: var(--color-gray-300);
+                --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+                --color-btn-primary-text: var(--color-slate-900);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+                --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+                --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+                --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+            }
+        }
+
+        /* Base styles */
+        html {
+            font-size: var(--font-size-base);
+            font-family: var(--font-family-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-text);
+            background-color: var(--color-background);
+            -webkit-font-smoothing: antialiased;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            margin: 0;
+            font-weight: var(--font-weight-semibold);
+            line-height: var(--line-height-tight);
+            color: var(--color-text);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        h1 { font-size: var(--font-size-4xl); }
+        h2 { font-size: var(--font-size-3xl); }
+        h3 { font-size: var(--font-size-2xl); }
+        h4 { font-size: var(--font-size-xl); }
+        h5 { font-size: var(--font-size-lg); }
+        h6 { font-size: var(--font-size-md); }
+
+        p {
+            margin: 0 0 var(--space-16) 0;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-card-border);
+            padding: var(--space-16) var(--space-20);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: var(--font-size-2xl);
+            margin: 0;
+        }
+
+        /* Main content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Home view */
+        .home-view {
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-32);
+            gap: var(--space-24);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-12) var(--space-20);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-medium);
+            line-height: 1.5;
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            border: none;
+            text-decoration: none;
+            position: relative;
+            min-height: 44px;
+        }
+
+        .btn:focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        .btn--primary {
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+        }
+
+        .btn--primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn--primary:active {
+            background: var(--color-primary-active);
+        }
+
+        .btn--secondary {
+            background: var(--color-secondary);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn--secondary:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .btn--outline {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+        }
+
+        .btn--outline:hover {
+            background: var(--color-secondary);
+        }
+
+        .btn--large {
+            padding: var(--space-20) var(--space-32);
+            font-size: var(--font-size-xl);
+            min-width: 280px;
+            min-height: 60px;
+        }
+
+        .btn--small {
+            padding: var(--space-8) var(--space-16);
+            font-size: var(--font-size-sm);
+            min-height: 36px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Form controls */
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: var(--space-12) var(--space-16);
+            font-size: var(--font-size-md);
+            line-height: 1.5;
+            color: var(--color-text);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            transition: border-color var(--duration-fast) var(--ease-standard);
+            min-height: 44px;
+        }
+
+        .form-control:focus {
+            border-color: var(--color-primary);
+            outline: var(--focus-outline);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-base);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-20);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-20);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            margin-bottom: var(--space-20);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--space-12);
+            justify-content: flex-end;
+            margin-top: var(--space-20);
+        }
+
+        /* Video player */
+        .video-container {
+            width: 100%;
+            background: var(--color-black);
+            border-radius: var(--radius-base);
+            overflow: hidden;
+            margin-bottom: var(--space-16);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Subtitle display */
+        .subtitle-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-20);
+            margin-bottom: var(--space-16);
+            min-height: 120px;
+        }
+
+        .subtitle-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .subtitle-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-16);
+            margin-bottom: var(--space-16);
+        }
+
+        .subtitle-info {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        /* File list */
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-12);
+        }
+
+        .file-item {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-16);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: var(--font-weight-medium);
+            margin-bottom: var(--space-4);
+        }
+
+        .file-details {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        /* WebSocket view */
+        .websocket-view {
+            padding: var(--space-20);
+            gap: var(--space-20);
+        }
+
+        .connection-controls {
+            display: flex;
+            gap: var(--space-12);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            font-size: var(--font-size-sm);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-error);
+        }
+
+        .status-indicator.connected {
+            background: var(--color-success);
+        }
+
+        .text-display {
+            flex: 1;
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-20);
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            user-select: text;
+            -webkit-user-select: text;
+            min-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Watch view */
+        .watch-view {
+            padding: var(--space-20);
+            gap: var(--space-20);
+        }
+
+        .file-upload-section {
+            background: var(--color-surface);
+            border: 2px dashed var(--color-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-32);
+            text-align: center;
+        }
+
+        .file-upload-section.has-files {
+            border-style: solid;
+            background: var(--color-bg-3);
+        }
+
+        /* Vocabulary stats */
+        .vocab-stats {
+            background: var(--color-bg-1);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-20);
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-8);
+        }
+
+        .stats-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Utility classes */
+        .text-center { text-align: center; }
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-8 { gap: var(--space-8); }
+        .gap-12 { gap: var(--space-12); }
+        .gap-16 { gap: var(--space-16); }
+        .mb-16 { margin-bottom: var(--space-16); }
+        .mt-16 { margin-top: var(--space-16); }
+
+        /* iPad optimizations */
+        @media (max-width: 1024px) {
+            .header {
+                padding: var(--space-12) var(--space-16);
+            }
+            
+            .home-view {
+                padding: var(--space-24);
+            }
+            
+            .btn--large {
+                min-width: 250px;
+                padding: var(--space-16) var(--space-24);
+            }
+            
+            .modal-content {
+                margin: var(--space-16);
+                padding: var(--space-20);
+            }
+        }
+
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover {
+                background: var(--color-primary);
+            }
+            
+            .btn--secondary:hover {
+                background: var(--color-secondary);
+            }
+            
+            .btn--outline:hover {
+                background: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Japanese Vocab Miner</h1>
+        <button class="btn btn--secondary btn--small" id="manageVocabBtn">Manage Vocabulary</button>
+    </header>
+
+    <main class="main">
+        <!-- Home View -->
+        <div class="view home-view active" id="homeView">
+            <h2 class="text-center mb-16">Choose Your Study Mode</h2>
+            <button class="btn btn--primary btn--large" id="watchModeBtn">📺 Watch</button>
+            <button class="btn btn--primary btn--large" id="websocketModeBtn">🔗 Text/WebSocket</button>
+        </div>
+
+        <!-- Watch View -->
+        <div class="view watch-view" id="watchView">
+            <div class="file-upload-section" id="fileUploadSection">
+                <h3>Select Video &amp; Subtitle Files</h3>
+                <p class="mb-16">Choose video files (.mp4, .webm) and subtitle files (.srt, .vtt)</p>
+                <input type="file" id="fileInput" multiple accept=".mp4,.webm,.srt,.vtt" class="hidden">
+                <button class="btn btn--primary" id="selectFilesBtn">Select Files</button>
+            </div>
+
+            <div id="fileListContainer" class="hidden">
+                <h3>Available Videos</h3>
+                <div class="file-list" id="fileList"></div>
+            </div>
+
+            <div id="videoPlayerContainer" class="hidden">
+                <div class="video-container">
+                    <video id="videoPlayer" controls controlsList="nodownload"></video>
+                </div>
+
+                <div class="subtitle-navigation">
+                    <button class="btn btn--outline" id="prevSubtitleBtn">⬅ Previous</button>
+                    <div class="subtitle-info" id="subtitleInfo">No subtitles loaded</div>
+                    <button class="btn btn--outline" id="nextSubtitleBtn">Next ➡</button>
+                </div>
+
+                <div class="subtitle-container">
+                    <div class="subtitle-text" id="subtitleText">Subtitles will appear here...</div>
+                </div>
+
+                <div class="flex gap-12">
+                    <button class="btn btn--secondary" id="backToFilesBtn">Back to Files</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WebSocket View -->
+        <div class="view websocket-view" id="websocketView">
+            <h2>WebSocket Text Mining</h2>
+            
+            <div class="form-group">
+                <label class="form-label" for="websocketUrl">WebSocket URL</label>
+                <input type="text" id="websocketUrl" class="form-control" placeholder="ws://localhost:8080" value="ws://localhost:8080">
+            </div>
+
+            <div class="connection-controls">
+                <button class="btn btn--primary" id="connectBtn">Connect</button>
+                <button class="btn btn--secondary" id="disconnectBtn" disabled>Disconnect</button>
+                <div class="connection-status">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <span id="connectionStatus">Disconnected</span>
+                </div>
+            </div>
+
+            <div class="text-display" id="textDisplay">WebSocket text will appear here...</div>
+        </div>
+    </main>
+
+    <!-- Vocabulary Mining Modal -->
+    <div class="modal" id="vocabModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Mine Vocabulary</h3>
+            </div>
+            
+            <form id="vocabForm">
+                <div class="form-group">
+                    <label class="form-label" for="expression">Expression</label>
+                    <input type="text" id="expression" class="form-control" required readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="expressionFurigana">Expression Furigana</label>
+                    <input type="text" id="expressionFurigana" class="form-control" placeholder="猫[ねこ]">
+                    <small class="form-help">Use format: 漢字[ひらがな] for furigana markup</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="mainDefinition">Main Definition</label>
+                    <textarea id="mainDefinition" class="form-control" rows="3" placeholder="Enter the definition..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="sentence">Sentence</label>
+                    <textarea id="sentence" class="form-control" rows="2" readonly></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn--secondary" id="cancelVocabBtn">Cancel</button>
+                    <button type="submit" class="btn btn--primary">Save to Anki List</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Vocabulary Management Modal -->
+    <div class="modal" id="vocabManageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Manage Vocabulary</h3>
+            </div>
+            
+            <div class="vocab-stats" id="vocabStats">
+                <div class="stats-row">
+                    <span>Total Vocabulary:</span>
+                    <strong id="totalVocabCount">0</strong>
+                </div>
+                <div class="stats-row">
+                    <span>Last Export:</span>
+                    <span id="lastExportDate">Never</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col gap-12">
+                <button class="btn btn--primary" id="exportAllBtn">Export All as CSV</button>
+                <button class="btn btn--secondary" id="exportNewBtn">Export New Only</button>
+                <input type="file" id="importFileInput" accept=".csv,.tsv" class="hidden">
+                <button class="btn btn--outline" id="importVocabBtn">Import Vocabulary</button>
+                <button class="btn btn--outline" id="deleteAllBtn" style="color: var(--color-error); border-color: var(--color-error);">Delete All Vocabulary</button>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn--secondary" id="closeManageBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="confirmTitle">Confirm Action</h3>
+            </div>
+            <p id="confirmMessage">Are you sure you want to continue?</p>
+            <div class="modal-actions">
+                <button class="btn btn--secondary" id="confirmCancelBtn">Cancel</button>
+                <button class="btn btn--primary" id="confirmOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global application state
+        let currentView = 'home';
+        let videoFiles = [];
+        let subtitleFiles = [];
+        let currentVideo = null;
+        let currentSubtitle = null;
+        let subtitles = [];
+        let currentSubtitleIndex = 0;
+        let vocabEntries = [];
+        let websocket = null;
+        let selectedText = '';
+        let selectedSentence = '';
+        let db = null;
+
+        // Initialize IndexedDB
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('VocabMinerDB', 1);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    if (!db.objectStoreNames.contains('vocabulary')) {
+                        const store = db.createObjectStore('vocabulary', { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('expression', 'Expression', { unique: false });
+                        store.createIndex('timestamp', 'timestamp', { unique: false });
+                    }
+                };
+            });
+        }
+
+        // Database operations
+        async function saveVocabEntry(entry) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readwrite');
+                const store = transaction.objectStore('vocabulary');
+                
+                entry.timestamp = Date.now();
+                entry.exported = false;
+                
+                const request = store.add(entry);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function checkDuplicateVocab(expression) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readonly');
+                const store = transaction.objectStore('vocabulary');
+                const index = store.index('expression');
+                
+                const request = index.get(expression);
+                request.onsuccess = () => resolve(request.result ? true : false);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function getAllVocabEntries() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readonly');
+                const store = transaction.objectStore('vocabulary');
+                
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function getNewVocabEntries() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readonly');
+                const store = transaction.objectStore('vocabulary');
+                
+                const request = store.getAll();
+                request.onsuccess = () => {
+                    const entries = request.result.filter(entry => !entry.exported);
+                    resolve(entries);
+                };
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function markEntriesAsExported(entries) {
+            const transaction = db.transaction(['vocabulary'], 'readwrite');
+            const store = transaction.objectStore('vocabulary');
+            
+            for (const entry of entries) {
+                entry.exported = true;
+                store.put(entry);
+            }
+            
+            return new Promise((resolve, reject) => {
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = () => reject(transaction.error);
+            });
+        }
+
+        async function clearAllVocab() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readwrite');
+                const store = transaction.objectStore('vocabulary');
+                
+                const request = store.clear();
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // Navigation functions
+        function showView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show selected view
+            document.getElementById(viewName + 'View').classList.add('active');
+            currentView = viewName;
+        }
+
+        // File handling
+        function handleFileSelection(files) {
+            videoFiles = [];
+            subtitleFiles = [];
+            
+            Array.from(files).forEach(file => {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (['mp4', 'webm'].includes(ext)) {
+                    videoFiles.push(file);
+                } else if (['srt', 'vtt'].includes(ext)) {
+                    subtitleFiles.push(file);
+                }
+            });
+            
+            displayFileList();
+        }
+
+        function displayFileList() {
+            const fileList = document.getElementById('fileList');
+            const fileListContainer = document.getElementById('fileListContainer');
+            const uploadSection = document.getElementById('fileUploadSection');
+            
+            fileList.innerHTML = '';
+            
+            if (videoFiles.length === 0) {
+                fileListContainer.classList.add('hidden');
+                uploadSection.classList.remove('has-files');
+                return;
+            }
+            
+            uploadSection.classList.add('has-files');
+            fileListContainer.classList.remove('hidden');
+            
+            videoFiles.forEach(videoFile => {
+                const baseName = videoFile.name.replace(/\.[^/.]+$/, "");
+                const matchingSubtitle = subtitleFiles.find(sub => 
+                    sub.name.startsWith(baseName) || baseName.startsWith(sub.name.replace(/\.[^/.]+$/, ""))
+                );
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-name">${videoFile.name}</div>
+                        <div class="file-details">
+                            ${matchingSubtitle ? `📄 ${matchingSubtitle.name}` : '❌ No subtitle file'}
+                        </div>
+                    </div>
+                    <button class="btn btn--primary" onclick="playVideo('${videoFile.name}')" ${!matchingSubtitle ? 'disabled title="No subtitle file found"' : ''}>Play</button>
+                `;
+                
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        // Video playback
+        async function playVideo(videoFileName) {
+            const videoFile = videoFiles.find(f => f.name === videoFileName);
+            const baseName = videoFile.name.replace(/\.[^/.]+$/, "");
+            const subtitleFile = subtitleFiles.find(sub => 
+                sub.name.startsWith(baseName) || baseName.startsWith(sub.name.replace(/\.[^/.]+$/, ""))
+            );
+            
+            if (!subtitleFile) {
+                alert('No subtitle file found for this video.');
+                return;
+            }
+            
+            currentVideo = videoFile;
+            currentSubtitle = subtitleFile;
+            
+            // Setup video
+            const videoPlayer = document.getElementById('videoPlayer');
+            const videoUrl = URL.createObjectURL(videoFile);
+            videoPlayer.src = videoUrl;
+            
+            // Parse subtitles
+            const subtitleText = await subtitleFile.text();
+            subtitles = parseSubtitles(subtitleText, subtitleFile.name.endsWith('.vtt'));
+            currentSubtitleIndex = 0;
+            
+            // Show video player
+            document.getElementById('fileListContainer').classList.add('hidden');
+            document.getElementById('videoPlayerContainer').classList.remove('hidden');
+            
+            // Setup subtitle tracking
+            videoPlayer.addEventListener('timeupdate', updateSubtitleDisplay);
+            
+            updateSubtitleInfo();
+        }
+
+        function parseSubtitles(text, isVTT = false) {
+            const subtitles = [];
+            const lines = text.split('\n');
+            let i = isVTT ? 1 : 0; // Skip "WEBVTT" line for VTT files
+            
+            while (i < lines.length) {
+                // Skip empty lines
+                if (!lines[i].trim()) {
+                    i++;
+                    continue;
+                }
+                
+                // Skip sequence number for SRT (not always present in VTT)
+                if (!isVTT && /^\d+$/.test(lines[i].trim())) {
+                    i++;
+                }
+                
+                // Parse time codes
+                if (lines[i] && lines[i].includes('-->')) {
+                    const timeMatch = lines[i].match(/(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+-->\s+(\d{2}:\d{2}:\d{2}[.,]\d{3})/);
+                    if (timeMatch) {
+                        const startTime = parseTime(timeMatch[1]);
+                        const endTime = parseTime(timeMatch[2]);
+                        
+                        i++;
+                        let text = '';
+                        
+                        // Collect subtitle text
+                        while (i < lines.length && lines[i].trim()) {
+                            text += (text ? '\n' : '') + lines[i].trim();
+                            i++;
+                        }
+                        
+                        if (text) {
+                            subtitles.push({
+                                start: startTime,
+                                end: endTime,
+                                text: text.replace(/<[^>]*>/g, '') // Remove HTML tags
+                            });
+                        }
+                    }
+                }
+                i++;
+            }
+            
+            return subtitles;
+        }
+
+        function parseTime(timeString) {
+            const parts = timeString.replace(',', '.').split(':');
+            const seconds = parts[2].split('.');
+            return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(seconds[0]) + parseInt(seconds[1]) / 1000;
+        }
+
+        function updateSubtitleDisplay() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const currentTime = videoPlayer.currentTime;
+            
+            // Find current subtitle
+            const currentSubtitleObj = subtitles.find(sub => 
+                currentTime >= sub.start && currentTime <= sub.end
+            );
+            
+            if (currentSubtitleObj) {
+                document.getElementById('subtitleText').textContent = currentSubtitleObj.text;
+                currentSubtitleIndex = subtitles.indexOf(currentSubtitleObj);
+                updateSubtitleInfo();
+            }
+        }
+
+        function updateSubtitleInfo() {
+            const info = document.getElementById('subtitleInfo');
+            info.textContent = `Subtitle ${currentSubtitleIndex + 1} of ${subtitles.length}`;
+        }
+
+        function seekToSubtitle(direction) {
+            if (subtitles.length === 0) return;
+            
+            if (direction === 'prev' && currentSubtitleIndex > 0) {
+                currentSubtitleIndex--;
+            } else if (direction === 'next' && currentSubtitleIndex < subtitles.length - 1) {
+                currentSubtitleIndex++;
+            }
+            
+            const targetSubtitle = subtitles[currentSubtitleIndex];
+            const videoPlayer = document.getElementById('videoPlayer');
+            videoPlayer.currentTime = targetSubtitle.start;
+            
+            document.getElementById('subtitleText').textContent = targetSubtitle.text;
+            updateSubtitleInfo();
+        }
+
+        // Text selection handling
+        function setupTextSelection(element) {
+            element.addEventListener('mouseup', handleTextSelection);
+            element.addEventListener('touchend', handleTextSelection);
+        }
+
+        function handleTextSelection(event) {
+            const selection = window.getSelection();
+            const text = selection.toString().trim();
+            
+            if (text.length > 0) {
+                selectedText = text;
+                
+                // Get the full sentence context
+                if (currentView === 'watch' && subtitles[currentSubtitleIndex]) {
+                    selectedSentence = subtitles[currentSubtitleIndex].text;
+                } else if (currentView === 'websocket') {
+                    // For WebSocket, try to get surrounding context
+                    const fullText = document.getElementById('textDisplay').textContent;
+                    selectedSentence = extractSentenceContext(fullText, text);
+                } else {
+                    selectedSentence = text;
+                }
+                
+                showVocabModal();
+                selection.removeAllRanges();
+            }
+        }
+
+        function extractSentenceContext(fullText, selectedText) {
+            const sentences = fullText.split(/[。！？\n]/);
+            const sentenceWithSelection = sentences.find(sentence => sentence.includes(selectedText));
+            return sentenceWithSelection ? sentenceWithSelection.trim() : selectedText;
+        }
+
+        // Vocabulary modal
+        function showVocabModal() {
+            document.getElementById('expression').value = selectedText;
+            document.getElementById('expressionFurigana').value = '';
+            document.getElementById('mainDefinition').value = '';
+            document.getElementById('sentence').value = selectedSentence;
+            
+            document.getElementById('vocabModal').classList.add('active');
+            
+            // Focus on furigana field
+            setTimeout(() => {
+                document.getElementById('expressionFurigana').focus();
+            }, 100);
+        }
+
+        function hideVocabModal() {
+            document.getElementById('vocabModal').classList.remove('active');
+        }
+
+        async function saveVocab(event) {
+            event.preventDefault();
+            
+            const expression = document.getElementById('expression').value.trim();
+            const expressionFurigana = document.getElementById('expressionFurigana').value.trim();
+            const mainDefinition = document.getElementById('mainDefinition').value.trim();
+            const sentence = document.getElementById('sentence').value.trim();
+            
+            if (!expression || !mainDefinition) {
+                alert('Expression and Main Definition are required.');
+                return;
+            }
+            
+            // Check for duplicates
+            const isDuplicate = await checkDuplicateVocab(expression);
+            if (isDuplicate) {
+                const confirmed = await showConfirm('Duplicate Entry', 'This word is already in your collection. Add anyway?');
+                if (!confirmed) return;
+            }
+            
+            const entry = {
+                Expression: expression,
+                ExpressionFurigana: expressionFurigana,
+                MainDefinition: mainDefinition,
+                Sentence: sentence
+            };
+            
+            try {
+                await saveVocabEntry(entry);
+                vocabEntries.push(entry);
+                hideVocabModal();
+                
+                // Show success feedback
+                showToast('Vocabulary saved successfully!');
+            } catch (error) {
+                console.error('Error saving vocabulary:', error);
+                alert('Failed to save vocabulary entry.');
+            }
+        }
+
+        // WebSocket functionality
+        function connectWebSocket() {
+            const url = document.getElementById('websocketUrl').value.trim();
+            if (!url) {
+                alert('Please enter a WebSocket URL.');
+                return;
+            }
+            
+            try {
+                websocket = new WebSocket(url);
+                
+                websocket.onopen = () => {
+                    updateConnectionStatus(true);
+                    document.getElementById('connectBtn').disabled = true;
+                    document.getElementById('disconnectBtn').disabled = false;
+                };
+                
+                websocket.onmessage = (event) => {
+                    const textDisplay = document.getElementById('textDisplay');
+                    textDisplay.textContent += event.data;
+                    textDisplay.scrollTop = textDisplay.scrollHeight;
+                };
+                
+                websocket.onclose = () => {
+                    updateConnectionStatus(false);
+                    document.getElementById('connectBtn').disabled = false;
+                    document.getElementById('disconnectBtn').disabled = true;
+                };
+                
+                websocket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    alert('WebSocket connection failed. Please check the URL and try again.');
+                    updateConnectionStatus(false);
+                };
+                
+            } catch (error) {
+                alert('Invalid WebSocket URL.');
+                console.error('WebSocket connection error:', error);
+            }
+        }
+
+        function disconnectWebSocket() {
+            if (websocket) {
+                websocket.close();
+                websocket = null;
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('statusIndicator');
+            const status = document.getElementById('connectionStatus');
+            
+            if (connected) {
+                indicator.classList.add('connected');
+                status.textContent = 'Connected';
+            } else {
+                indicator.classList.remove('connected');
+                status.textContent = 'Disconnected';
+            }
+        }
+
+        // Vocabulary management
+        async function showVocabManagement() {
+            await updateVocabStats();
+            document.getElementById('vocabManageModal').classList.add('active');
+        }
+
+        async function updateVocabStats() {
+            const entries = await getAllVocabEntries();
+            const totalCount = entries.length;
+            const lastExported = entries.find(e => e.exported);
+            
+            document.getElementById('totalVocabCount').textContent = totalCount;
+            document.getElementById('lastExportDate').textContent = 
+                lastExported ? new Date(lastExported.timestamp).toLocaleDateString() : 'Never';
+        }
+
+        async function exportVocab(newOnly = false) {
+            try {
+                const entries = newOnly ? await getNewVocabEntries() : await getAllVocabEntries();
+                
+                if (entries.length === 0) {
+                    alert(newOnly ? 'No new vocabulary to export.' : 'No vocabulary to export.');
+                    return;
+                }
+                
+                const csvContent = generateCSV(entries);
+                const blob = new Blob([csvContent], { type: 'text/tab-separated-values;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `vocab-export-${new Date().toISOString().split('T')[0]}.tsv`;
+                link.click();
+                
+                URL.revokeObjectURL(url);
+                
+                // Mark entries as exported
+                await markEntriesAsExported(entries);
+                await updateVocabStats();
+                
+                showToast(`Exported ${entries.length} vocabulary entries.`);
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Failed to export vocabulary.');
+            }
+        }
+
+        function generateCSV(entries) {
+            const headers = [
+                'Expression', 'ExpressionFurigana', 'ExpressionReading', 'ExpressionAudio', 
+                'SelectionText', 'MainDefinition', 'DefinitionPicture', 'Sentence', 
+                'SentenceFurigana', 'SentenceAudio', 'Picture', 'Glossary', 'Hint', 
+                'IsWordAndSentenceCard', 'IsClickCard', 'IsSentenceCard', 'IsAudioCard', 
+                'PitchPosition', 'PitchCategories', 'Frequency', 'FreqSort', 'MiscInfo'
+            ];
+            
+            let csv = headers.join('\t') + '\n';
+            
+            entries.forEach(entry => {
+                const row = [
+                    entry.Expression || '',
+                    entry.ExpressionFurigana || '',
+                    '', // ExpressionReading
+                    '', // ExpressionAudio
+                    '', // SelectionText
+                    entry.MainDefinition || '',
+                    '', // DefinitionPicture
+                    entry.Sentence || '',
+                    '', // SentenceFurigana
+                    '', // SentenceAudio
+                    '', // Picture
+                    '', // Glossary
+                    '', // Hint
+                    '', // IsWordAndSentenceCard
+                    '', // IsClickCard
+                    '', // IsSentenceCard
+                    '', // IsAudioCard
+                    '', // PitchPosition
+                    '', // PitchCategories
+                    '', // Frequency
+                    '', // FreqSort
+                    ''  // MiscInfo
+                ];
+                
+                csv += row.join('\t') + '\n';
+            });
+            
+            return csv;
+        }
+
+        async function importVocab(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            try {
+                const text = await file.text();
+                const lines = text.split('\n');
+                
+                if (lines.length < 2) {
+                    alert('Invalid file format.');
+                    return;
+                }
+                
+                const headers = lines[0].split('\t');
+                const expressionIndex = headers.indexOf('Expression');
+                const furiganaIndex = headers.indexOf('ExpressionFurigana');
+                const definitionIndex = headers.indexOf('MainDefinition');
+                const sentenceIndex = headers.indexOf('Sentence');
+                
+                if (expressionIndex === -1 || definitionIndex === -1) {
+                    alert('Required columns not found in file.');
+                    return;
+                }
+                
+                let importCount = 0;
+                
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    const columns = line.split('\t');
+                    const expression = columns[expressionIndex]?.trim();
+                    const definition = columns[definitionIndex]?.trim();
+                    
+                    if (expression && definition) {
+                        const entry = {
+                            Expression: expression,
+                            ExpressionFurigana: columns[furiganaIndex]?.trim() || '',
+                            MainDefinition: definition,
+                            Sentence: columns[sentenceIndex]?.trim() || ''
+                        };
+                        
+                        const isDuplicate = await checkDuplicateVocab(expression);
+                        if (!isDuplicate) {
+                            await saveVocabEntry(entry);
+                            importCount++;
+                        }
+                    }
+                }
+                
+                await updateVocabStats();
+                showToast(`Imported ${importCount} new vocabulary entries.`);
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('Failed to import vocabulary file.');
+            }
+            
+            // Clear file input
+            event.target.value = '';
+        }
+
+        async function deleteAllVocab() {
+            const confirmed = await showConfirm('Delete All Vocabulary', 'Are you sure you want to delete all vocabulary entries? This action cannot be undone.');
+            
+            if (confirmed) {
+                try {
+                    await clearAllVocab();
+                    vocabEntries = [];
+                    await updateVocabStats();
+                    showToast('All vocabulary deleted.');
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    alert('Failed to delete vocabulary.');
+                }
+            }
+        }
+
+        // Utility functions
+        function showConfirm(title, message) {
+            return new Promise((resolve) => {
+                document.getElementById('confirmTitle').textContent = title;
+                document.getElementById('confirmMessage').textContent = message;
+                document.getElementById('confirmModal').classList.add('active');
+                
+                const handleConfirm = (result) => {
+                    document.getElementById('confirmModal').classList.remove('active');
+                    document.getElementById('confirmOkBtn').removeEventListener('click', handleOk);
+                    document.getElementById('confirmCancelBtn').removeEventListener('click', handleCancel);
+                    resolve(result);
+                };
+                
+                const handleOk = () => handleConfirm(true);
+                const handleCancel = () => handleConfirm(false);
+                
+                document.getElementById('confirmOkBtn').addEventListener('click', handleOk);
+                document.getElementById('confirmCancelBtn').addEventListener('click', handleCancel);
+            });
+        }
+
+        function showToast(message) {
+            // Simple toast implementation
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--color-success);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-weight: 500;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Event listeners setup
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDB();
+                vocabEntries = await getAllVocabEntries();
+            } catch (error) {
+                console.error('Failed to initialize database:', error);
+            }
+            
+            // Navigation
+            document.getElementById('watchModeBtn').addEventListener('click', () => showView('watch'));
+            document.getElementById('websocketModeBtn').addEventListener('click', () => showView('websocket'));
+            document.getElementById('manageVocabBtn').addEventListener('click', showVocabManagement);
+            
+            // File handling
+            document.getElementById('selectFilesBtn').addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+            
+            document.getElementById('fileInput').addEventListener('change', (e) => {
+                handleFileSelection(e.target.files);
+            });
+            
+            // Video controls
+            document.getElementById('prevSubtitleBtn').addEventListener('click', () => seekToSubtitle('prev'));
+            document.getElementById('nextSubtitleBtn').addEventListener('click', () => seekToSubtitle('next'));
+            document.getElementById('backToFilesBtn').addEventListener('click', () => {
+                document.getElementById('videoPlayerContainer').classList.add('hidden');
+                document.getElementById('fileListContainer').classList.remove('hidden');
+                
+                // Stop video and clear source
+                const videoPlayer = document.getElementById('videoPlayer');
+                videoPlayer.pause();
+                if (videoPlayer.src) {
+                    URL.revokeObjectURL(videoPlayer.src);
+                    videoPlayer.src = '';
+                }
+            });
+            
+            // WebSocket controls
+            document.getElementById('connectBtn').addEventListener('click', connectWebSocket);
+            document.getElementById('disconnectBtn').addEventListener('click', disconnectWebSocket);
+            
+            // Text selection setup
+            setupTextSelection(document.getElementById('subtitleText'));
+            setupTextSelection(document.getElementById('textDisplay'));
+            
+            // Vocabulary modal
+            document.getElementById('vocabForm').addEventListener('submit', saveVocab);
+            document.getElementById('cancelVocabBtn').addEventListener('click', hideVocabModal);
+            
+            // Vocabulary management
+            document.getElementById('exportAllBtn').addEventListener('click', () => exportVocab(false));
+            document.getElementById('exportNewBtn').addEventListener('click', () => exportVocab(true));
+            document.getElementById('importVocabBtn').addEventListener('click', () => {
+                document.getElementById('importFileInput').click();
+            });
+            document.getElementById('importFileInput').addEventListener('change', importVocab);
+            document.getElementById('deleteAllBtn').addEventListener('click', deleteAllVocab);
+            document.getElementById('closeManageBtn').addEventListener('click', () => {
+                document.getElementById('vocabManageModal').classList.remove('active');
+            });
+            
+            // Close modals on outside click
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Prevent context menu on long press for better touch experience
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.closest('.subtitle-text') || e.target.closest('.text-display')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
