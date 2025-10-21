@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subtitle Player for Manabi Reader</title>
+    <title>Video Transcript Player</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,34 +13,130 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            padding: 20px;
-            max-width: 1024px;
-            margin: 0 auto;
-            background: #f5f5f5;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
         }
         
         .container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            height: 100vh;
+            width: 100vw;
         }
         
-        h1 {
-            margin-bottom: 30px;
-            color: #333;
-        }
-        
-        .file-section {
-            margin: 20px 0;
+        /* Video Side */
+        .video-panel {
+            flex: 6;
+            display: flex;
+            flex-direction: column;
+            background: #000;
             padding: 20px;
-            background: #f8f9fa;
+        }
+        
+        #video-player {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+            background: #000;
             border-radius: 8px;
         }
         
-        .file-section h3 {
-            margin-bottom: 15px;
-            color: #555;
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Transcript Side */
+        .transcript-panel {
+            flex: 4;
+            background: #1c1c1e;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #38383a;
+        }
+        
+        .transcript-header {
+            padding: 20px;
+            background: #2c2c2e;
+            border-bottom: 1px solid #38383a;
+        }
+        
+        .transcript-header h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .transcript-info {
+            font-size: 14px;
+            color: #98989d;
+        }
+        
+        .transcript-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scroll-behavior: smooth;
+        }
+        
+        .transcript-item {
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+        
+        .transcript-item:hover {
+            background: #2c2c2e;
+        }
+        
+        .transcript-item.active {
+            background: #007AFF;
+            color: #fff;
+        }
+        
+        .transcript-item.past {
+            opacity: 0.6;
+        }
+        
+        .transcript-timestamp {
+            font-size: 12px;
+            color: #98989d;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .transcript-item.active .transcript-timestamp {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .transcript-text {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        /* Custom Scrollbar */
+        .transcript-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .transcript-content::-webkit-scrollbar-track {
+            background: #1c1c1e;
+        }
+        
+        .transcript-content::-webkit-scrollbar-thumb {
+            background: #48484a;
+            border-radius: 4px;
+        }
+        
+        .transcript-content::-webkit-scrollbar-thumb:hover {
+            background: #58585a;
         }
         
         button {
@@ -53,116 +149,90 @@
             color: white;
             cursor: pointer;
             font-weight: 500;
-            margin: 5px;
         }
         
         button:hover {
             background: #0051D5;
         }
         
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        .subtitle-counter {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 12px 24px;
+            background: #1c1c1e;
+            border-radius: 8px;
+            color: #fff;
         }
         
-        button.secondary {
-            background: #5856D6;
+        /* Upload Screen */
+        .upload-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
         }
         
-        button.success {
-            background: #34C759;
+        .upload-container {
+            background: #1c1c1e;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        .upload-container h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .file-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: #2c2c2e;
+            border-radius: 12px;
+        }
+        
+        .file-section h3 {
+            margin-bottom: 15px;
+            color: #98989d;
+            font-size: 16px;
         }
         
         .file-btn {
             width: 100%;
             margin: 10px 0;
+            min-height: 50px;
         }
         
         .file-info {
             margin-top: 10px;
-            padding: 10px;
-            background: #e8f4ff;
-            border-radius: 4px;
+            padding: 12px;
+            background: #007AFF;
+            border-radius: 8px;
             font-size: 14px;
-            color: #333;
         }
         
-        #video-player {
-            width: 100%;
-            max-height: 500px;
-            background: black;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-        
-        .player-container {
-            margin-top: 30px;
-        }
-        
-        .subtitle-display {
-            margin: 20px 0;
-            padding: 30px;
-            background: #f8f9fa;
-            border: 2px solid #007AFF;
-            border-radius: 8px;
-            font-size: 24px;
-            line-height: 1.8;
-            min-height: 120px;
-            text-align: center;
-            user-select: text;
-            -webkit-user-select: text;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-        
-        .subtitle-counter {
-            font-size: 18px;
-            font-weight: 600;
-            padding: 12px 24px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            color: #333;
-        }
-        
-        .manabi-actions {
-            margin: 30px 0;
-            padding: 20px;
-            background: #e8f4ff;
-            border-radius: 8px;
-        }
-        
-        .manabi-actions h3 {
-            margin-bottom: 15px;
-            color: #007AFF;
-        }
-        
-        .manabi-actions p {
-            margin-bottom: 15px;
-            color: #555;
-            line-height: 1.6;
-        }
-        
-        .help-text {
-            margin: 15px 0;
-            padding: 15px;
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            border-radius: 4px;
-            font-size: 14px;
-            color: #856404;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .video-panel {
+                flex: 1;
+            }
+            
+            .transcript-panel {
+                flex: 1;
+                border-left: none;
+                border-top: 1px solid #38383a;
+            }
         }
         
         :root {
@@ -298,66 +368,63 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📺 Subtitle Player for Manabi Reader</h1>
-        
-        <div class="file-section">
-            <h3>1. Select Video File</h3>
-            <button class="file-btn" id="select-video-btn">Choose Video</button>
-            <input type="file" id="video-file-input" accept="video/*" style="display: none;">
-            <div id="video-filename" class="file-info" style="display: none;"></div>
+    <!-- Upload Screen -->
+    <div id="upload-screen" class="upload-screen">
+        <div class="upload-container">
+            <h1>📺 Video Transcript Player</h1>
+            
+            <div class="file-section">
+                <h3>SELECT VIDEO FILE</h3>
+                <button class="file-btn" id="select-video-btn">Choose Video</button>
+                <input type="file" id="video-file-input" accept="video/*" style="display: none;">
+                <div id="video-filename" class="file-info" style="display: none;"></div>
+            </div>
+            
+            <div class="file-section">
+                <h3>SELECT SUBTITLE FILE</h3>
+                <button class="file-btn" id="select-subtitle-btn">Choose Subtitle</button>
+                <input type="file" id="subtitle-file-input" accept="text/plain,.srt,.vtt,.txt,.ass,text/*,*/*" style="display: none;">
+                <div id="subtitle-filename" class="file-info" style="display: none;"></div>
+            </div>
+            
+            <button id="load-player-btn" class="file-btn" disabled style="background: #34C759; font-size: 18px;">
+                ▶️ Load Player
+            </button>
         </div>
-        
-        <div class="file-section">
-            <h3>2. Select Subtitle File</h3>
-            <button class="file-btn" id="select-subtitle-btn">Choose Subtitle</button>
-            <input type="file" id="subtitle-file-input" accept="text/plain,.srt,.vtt,.txt,.ass,text/*,*/*" style="display: none;">
-            <div id="subtitle-filename" class="file-info" style="display: none;"></div>
-        </div>
-        
-        <button id="play-video-btn" class="file-btn" disabled>▶️ Load Video & Subtitles</button>
-        
-        <div id="player-container" class="player-container" style="display: none;">
+    </div>
+    
+    <!-- Player Screen -->
+    <div id="player-screen" class="container" style="display: none;">
+        <!-- Video Panel -->
+        <div class="video-panel">
             <video id="video-player" controls></video>
             
-            <div class="subtitle-display" id="subtitle-display">
-                Subtitles will appear here...
-            </div>
-            
             <div class="controls">
-                <button id="prev-subtitle-btn">⬅️ Previous</button>
+                <button id="prev-btn">⬅️ Previous</button>
                 <span class="subtitle-counter" id="subtitle-counter">0 / 0</span>
-                <button id="next-subtitle-btn">Next ➡️</button>
+                <button id="next-btn">Next ➡️</button>
+            </div>
+        </div>
+        
+        <!-- Transcript Panel -->
+        <div class="transcript-panel">
+            <div class="transcript-header">
+                <h2>Transcript</h2>
+                <p class="transcript-info">Click any subtitle to jump to that timestamp • Select text for Manabi Reader</p>
             </div>
             
-            <div class="manabi-actions">
-                <h3>📱 Use with Manabi Reader</h3>
-                <p>Copy subtitle text and paste into Manabi Reader for Japanese parsing, word lookup, and Anki flashcard creation.</p>
-                
-                <div class="button-group">
-                    <button id="copy-current-btn" class="success">📋 Copy Current Subtitle</button>
-                    <button id="copy-all-btn" class="success">📋 Copy All Subtitles</button>btitles</button>
-                    <button id="view-subtitles-btn" class="secondary">🔍 View All in New Tab</button>
-                </div>
-                
-                <div class="help-text">
-                    💡 <strong>How to use:</strong><br>
-                    1. Click "Copy Current Subtitle" or "Copy All Subtitles"<br>
-                    2. Open Manabi Reader on your iPad<br>
-                    3. Paste the text into Manabi Reader<br>
-                    4. Use Manabi Reader's parsing and Anki integration
-                </div>
+            <div id="transcript-content" class="transcript-content">
+                <!-- Transcript items will be inserted here -->
             </div>
         </div>
     </div>
 
     <script>
         // State
-        let selectedVideo = null;
-        let selectedSubtitle = null;
+        let videoFile = null;
+        let subtitleFile = null;
         let subtitles = [];
-        let currentSubIndex = 0;
-        let allSubtitleText = '';
+        let currentIndex = 0;
 
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
@@ -365,6 +432,7 @@
         });
 
         function attachEventListeners() {
+            // File selection
             document.getElementById('select-video-btn').addEventListener('click', () => {
                 document.getElementById('video-file-input').click();
             });
@@ -375,20 +443,17 @@
             
             document.getElementById('video-file-input').addEventListener('change', handleVideoSelect);
             document.getElementById('subtitle-file-input').addEventListener('change', handleSubtitleSelect);
-            document.getElementById('play-video-btn').addEventListener('click', loadPlayer);
+            document.getElementById('load-player-btn').addEventListener('click', loadPlayer);
             
-            document.getElementById('prev-subtitle-btn').addEventListener('click', prevSubtitle);
-            document.getElementById('next-subtitle-btn').addEventListener('click', nextSubtitle);
-            
-            document.getElementById('copy-current-btn').addEventListener('click', copyCurrentSubtitle);
-            document.getElementById('copy-all-btn').addEventListener('click', copyAllSubtitles);
-            document.getElementById('view-subtitles-btn').addEventListener('click', viewSubtitlesInNewTab);
+            // Playback controls
+            document.getElementById('prev-btn').addEventListener('click', previousSubtitle);
+            document.getElementById('next-btn').addEventListener('click', nextSubtitle);
         }
 
         function handleVideoSelect(event) {
             const file = event.target.files[0];
             if (file) {
-                selectedVideo = file;
+                videoFile = file;
                 const info = document.getElementById('video-filename');
                 info.textContent = `✓ ${file.name}`;
                 info.style.display = 'block';
@@ -399,39 +464,32 @@
         async function handleSubtitleSelect(event) {
             const file = event.target.files[0];
             if (file) {
-                selectedSubtitle = file;
-                const info = document.getElementById('subtitle-filename');
-                info.textContent = `✓ ${file.name}`;
-                info.style.display = 'block';
-                
+                subtitleFile = file;
                 const text = await file.text();
-                allSubtitleText = text;
                 subtitles = parseSRT(text);
                 
-                info.textContent += ` (${subtitles.length} subtitles loaded)`;
+                const info = document.getElementById('subtitle-filename');
+                info.textContent = `✓ ${file.name} (${subtitles.length} subtitles)`;
+                info.style.display = 'block';
+                
                 checkLoadButton();
             }
         }
 
         function checkLoadButton() {
-            const loadBtn = document.getElementById('play-video-btn');
-            if (selectedVideo && selectedSubtitle && subtitles.length > 0) {
+            const loadBtn = document.getElementById('load-player-btn');
+            if (videoFile && subtitles.length > 0) {
                 loadBtn.disabled = false;
             }
         }
 
         function parseSRT(text) {
-            // Parse SRT format
             const blocks = text.trim().split(/\n\s*\n/);
             const parsed = [];
             
             blocks.forEach(block => {
                 const lines = block.split('\n');
                 if (lines.length >= 3) {
-                    // Line 0: index
-                    // Line 1: timestamp
-                    // Line 2+: text
-                    
                     const timeMatch = lines[1].match(/(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})/);
                     if (timeMatch) {
                         const startTime = parseTimestamp(timeMatch[1], timeMatch[2], timeMatch[3], timeMatch[4]);
@@ -441,7 +499,8 @@
                         parsed.push({
                             start: startTime,
                             end: endTime,
-                            text: text
+                            text: text,
+                            timestamp: formatTimestamp(startTime)
                         });
                     }
                 }
@@ -454,98 +513,121 @@
             return (parseInt(hours) * 3600) + (parseInt(minutes) * 60) + parseInt(seconds) + (parseInt(milliseconds) / 1000);
         }
 
+        function formatTimestamp(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            
+            if (hrs > 0) {
+                return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
         function loadPlayer() {
+            // Hide upload screen, show player
+            document.getElementById('upload-screen').style.display = 'none';
+            document.getElementById('player-screen').style.display = 'flex';
+            
+            // Load video
             const video = document.getElementById('video-player');
-            video.src = URL.createObjectURL(selectedVideo);
+            video.src = URL.createObjectURL(videoFile);
             
-            document.getElementById('player-container').style.display = 'block';
+            // Build transcript
+            buildTranscript();
             
-            currentSubIndex = 0;
-            displaySubtitle(currentSubIndex);
+            // Setup video time update listener
+            video.addEventListener('timeupdate', handleVideoTimeUpdate);
             
-            // Scroll to player
-            document.getElementById('player-container').scrollIntoView({ behavior: 'smooth' });
+            // Start at first subtitle
+            currentIndex = 0;
+            updateActiveSubtitle();
         }
 
-        function displaySubtitle(index) {
-            if (index < 0 || index >= subtitles.length) return;
+        function buildTranscript() {
+            const container = document.getElementById('transcript-content');
+            container.innerHTML = '';
             
-            const subtitle = subtitles[index];
-            document.getElementById('subtitle-display').textContent = subtitle.text;
-            document.getElementById('subtitle-counter').textContent = `${index + 1} / ${subtitles.length}`;
+            subtitles.forEach((subtitle, index) => {
+                const item = document.createElement('div');
+                item.className = 'transcript-item';
+                item.dataset.index = index;
+                
+                const timestamp = document.createElement('div');
+                timestamp.className = 'transcript-timestamp';
+                timestamp.textContent = subtitle.timestamp;
+                
+                const text = document.createElement('div');
+                text.className = 'transcript-text';
+                text.textContent = subtitle.text;
+                
+                item.appendChild(timestamp);
+                item.appendChild(text);
+                
+                // Click to jump to timestamp
+                item.addEventListener('click', () => {
+                    jumpToSubtitle(index);
+                });
+                
+                container.appendChild(item);
+            });
         }
 
-        function prevSubtitle() {
-            if (currentSubIndex > 0) {
-                currentSubIndex--;
-                displaySubtitle(currentSubIndex);
-                seekToSubtitle(currentSubIndex);
+        function handleVideoTimeUpdate() {
+            const video = document.getElementById('video-player');
+            const currentTime = video.currentTime;
+            
+            // Find current subtitle based on video time
+            for (let i = 0; i < subtitles.length; i++) {
+                if (currentTime >= subtitles[i].start && currentTime < subtitles[i].end) {
+                    if (i !== currentIndex) {
+                        currentIndex = i;
+                        updateActiveSubtitle();
+                    }
+                    break;
+                }
+            }
+        }
+
+        function updateActiveSubtitle() {
+            // Update counter
+            document.getElementById('subtitle-counter').textContent = `${currentIndex + 1} / ${subtitles.length}`;
+            
+            // Update transcript highlighting
+            const items = document.querySelectorAll('.transcript-item');
+            items.forEach((item, index) => {
+                item.classList.remove('active', 'past');
+                
+                if (index === currentIndex) {
+                    item.classList.add('active');
+                    // Scroll to active item
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else if (index < currentIndex) {
+                    item.classList.add('past');
+                }
+            });
+        }
+
+        function jumpToSubtitle(index) {
+            const video = document.getElementById('video-player');
+            video.currentTime = subtitles[index].start;
+            currentIndex = index;
+            updateActiveSubtitle();
+        }
+
+        function previousSubtitle() {
+            if (currentIndex > 0) {
+                jumpToSubtitle(currentIndex - 1);
             }
         }
 
         function nextSubtitle() {
-            if (currentSubIndex < subtitles.length - 1) {
-                currentSubIndex++;
-                displaySubtitle(currentSubIndex);
-                seekToSubtitle(currentSubIndex);
+            if (currentIndex < subtitles.length - 1) {
+                jumpToSubtitle(currentIndex + 1);
             }
         }
 
-        function seekToSubtitle(index) {
-            const video = document.getElementById('video-player');
-            const subtitle = subtitles[index];
-            if (subtitle && subtitle.start !== undefined) {
-                video.currentTime = subtitle.start;
-            }
-        }
 
-        // Manabi Reader Integration
-        function copyCurrentSubtitle() {
-            const subtitle = subtitles[currentSubIndex];
-            if (subtitle) {
-                copyToClipboard(subtitle.text);
-                alert('✓ Current subtitle copied to clipboard!\n\nPaste it into Manabi Reader.');
-            }
-        }
-
-        function copyAllSubtitles() {
-            if (allSubtitleText) {
-                copyToClipboard(allSubtitleText);
-                alert('✓ All subtitles copied to clipboard!\n\nPaste into Manabi Reader to parse the entire text.');
-            }
-        }
-
-        function viewSubtitlesInNewTab() {
-            const textOnly = subtitles.map(s => s.text).join('\n\n');
-            const blob = new Blob([textOnly], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
-        }
-
-        function copyToClipboard(text) {
-            // Modern clipboard API
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).catch(err => {
-                    fallbackCopy(text);
-                });
-            } else {
-                fallbackCopy(text);
-            }
-        }
-
-        function fallbackCopy(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-        }
-    </script>
-</body>
-</html>
     </script>
 </body>
 </html>
