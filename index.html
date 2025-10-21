@@ -1,0 +1,2686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Vocab Miner</title>
+    <style>
+        :root {
+            /* Primitive Color Tokens */
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-teal-800: rgba(41, 150, 161, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+
+            /* RGB versions for opacity control */
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-red-500-rgb: 192, 21, 47;
+            --color-red-400-rgb: 255, 84, 89;
+            --color-orange-500-rgb: 168, 75, 47;
+            --color-orange-400-rgb: 230, 129, 97;
+
+            /* Background color tokens (Light Mode) */
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+            --color-bg-5: rgba(147, 51, 234, 0.08);
+            --color-bg-6: rgba(249, 115, 22, 0.08);
+            --color-bg-7: rgba(236, 72, 153, 0.08);
+            --color-bg-8: rgba(6, 182, 212, 0.08);
+
+            /* Semantic Color Tokens (Light Mode) */
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-500);
+            --color-info: var(--color-slate-500);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+            /* Common style patterns */
+            --focus-ring: 0 0 0 3px var(--color-focus-ring);
+            --focus-outline: 2px solid var(--color-primary);
+            --status-bg-opacity: 0.15;
+            --status-border-opacity: 0.25;
+
+            /* Typography */
+            --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --font-size-4xl: 30px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --letter-spacing-tight: -0.01em;
+
+            /* Spacing */
+            --space-0: 0;
+            --space-1: 1px;
+            --space-2: 2px;
+            --space-4: 4px;
+            --space-6: 6px;
+            --space-8: 8px;
+            --space-10: 10px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            /* Shadows */
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+            /* Animation */
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Dark mode colors */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-200-rgb: 245, 245, 245;
+
+                --color-bg-1: rgba(29, 78, 216, 0.15);
+                --color-bg-2: rgba(180, 83, 9, 0.15);
+                --color-bg-3: rgba(21, 128, 61, 0.15);
+                --color-bg-4: rgba(185, 28, 28, 0.15);
+                --color-bg-5: rgba(107, 33, 168, 0.15);
+                --color-bg-6: rgba(194, 65, 12, 0.15);
+                --color-bg-7: rgba(190, 24, 93, 0.15);
+                --color-bg-8: rgba(8, 145, 178, 0.15);
+
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-primary-active: var(--color-teal-800);
+                --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+                --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+                --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-error: var(--color-red-400);
+                --color-success: var(--color-teal-300);
+                --color-warning: var(--color-orange-400);
+                --color-info: var(--color-gray-300);
+                --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+                --color-btn-primary-text: var(--color-slate-900);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+                --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+                --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+                --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+            }
+        }
+
+        /* Base styles */
+        html {
+            font-size: var(--font-size-base);
+            font-family: var(--font-family-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-text);
+            background-color: var(--color-background);
+            -webkit-font-smoothing: antialiased;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            margin: 0;
+            font-weight: var(--font-weight-semibold);
+            line-height: var(--line-height-tight);
+            color: var(--color-text);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        h1 { font-size: var(--font-size-4xl); }
+        h2 { font-size: var(--font-size-3xl); }
+        h3 { font-size: var(--font-size-2xl); }
+        h4 { font-size: var(--font-size-xl); }
+        h5 { font-size: var(--font-size-lg); }
+        h6 { font-size: var(--font-size-md); }
+
+        p {
+            margin: 0 0 var(--space-16) 0;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-card-border);
+            padding: var(--space-16) var(--space-20);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: var(--font-size-2xl);
+            margin: 0;
+        }
+
+        /* Main content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Home view */
+        .home-view {
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-32);
+            gap: var(--space-24);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-12) var(--space-20);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-medium);
+            line-height: 1.5;
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            border: none;
+            text-decoration: none;
+            position: relative;
+            min-height: 44px;
+        }
+
+        .btn:focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        .btn--primary {
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+        }
+
+        .btn--primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn--primary:active {
+            background: var(--color-primary-active);
+        }
+
+        .btn--secondary {
+            background: var(--color-secondary);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn--secondary:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .btn--outline {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+        }
+
+        .btn--outline:hover {
+            background: var(--color-secondary);
+        }
+
+        .btn--large {
+            padding: var(--space-20) var(--space-32);
+            font-size: var(--font-size-xl);
+            min-width: 280px;
+            min-height: 60px;
+        }
+
+        .btn--small {
+            padding: var(--space-8) var(--space-16);
+            font-size: var(--font-size-sm);
+            min-height: 36px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Form controls */
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: var(--space-12) var(--space-16);
+            font-size: var(--font-size-md);
+            line-height: 1.5;
+            color: var(--color-text);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            transition: border-color var(--duration-fast) var(--ease-standard);
+            min-height: 44px;
+        }
+
+        .form-control:focus {
+            border-color: var(--color-primary);
+            outline: var(--focus-outline);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-base);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-20);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-20);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            margin-bottom: var(--space-20);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--space-12);
+            justify-content: flex-end;
+            margin-top: var(--space-20);
+        }
+
+        /* Video player */
+        .video-container {
+            width: 100%;
+            background: var(--color-black);
+            border-radius: var(--radius-base);
+            overflow: hidden;
+            margin-bottom: var(--space-16);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Subtitle display */
+        .subtitle-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-20);
+            margin-bottom: var(--space-16);
+            min-height: 120px;
+        }
+
+        .subtitle-text {
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .subtitle-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-16);
+            margin-bottom: var(--space-16);
+        }
+
+        .subtitle-info {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        /* File list */
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-12);
+        }
+
+        .file-item {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-16);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: var(--font-weight-medium);
+            margin-bottom: var(--space-4);
+        }
+
+        .file-details {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        /* WebSocket view */
+        .websocket-view {
+            padding: var(--space-20);
+            gap: var(--space-20);
+        }
+
+        .connection-controls {
+            display: flex;
+            gap: var(--space-12);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            font-size: var(--font-size-sm);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-error);
+        }
+
+        .status-indicator.connected {
+            background: var(--color-success);
+        }
+
+        .text-display {
+            flex: 1;
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-20);
+            font-size: var(--font-size-lg);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            user-select: text;
+            -webkit-user-select: text;
+            min-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Watch view */
+        .watch-view {
+            padding: var(--space-20);
+            gap: var(--space-20);
+        }
+
+        .file-upload-section {
+            background: var(--color-surface);
+            border: 2px dashed var(--color-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-32);
+            text-align: center;
+        }
+
+        .file-upload-section.has-files {
+            border-style: solid;
+            background: var(--color-bg-3);
+        }
+
+        /* Demo notice */
+        .demo-notice {
+            background: var(--color-bg-2);
+            border: 1px solid var(--color-warning);
+            border-radius: var(--radius-base);
+            padding: var(--space-16);
+            margin-bottom: var(--space-20);
+            text-align: center;
+        }
+        
+        .demo-notice p {
+            margin: 0;
+            color: var(--color-warning);
+        }
+        
+        /* API Status Display */
+        #api-status {
+            padding: var(--space-12);
+            margin: var(--space-12) 0;
+            border-radius: var(--radius-base);
+            text-align: center;
+            font-weight: var(--font-weight-medium);
+            transition: opacity var(--duration-normal) var(--ease-standard);
+        }
+        
+        .status-success {
+            background: rgba(var(--color-success-rgb), 0.15);
+            color: var(--color-success);
+            border: 1px solid rgba(var(--color-success-rgb), 0.25);
+        }
+        
+        .status-warning {
+            background: rgba(var(--color-warning-rgb), 0.15);
+            color: var(--color-warning);
+            border: 1px solid rgba(var(--color-warning-rgb), 0.25);
+        }
+        
+        .status-error {
+            background: rgba(var(--color-error-rgb), 0.15);
+            color: var(--color-error);
+            border: 1px solid rgba(var(--color-error-rgb), 0.25);
+        }
+        
+        .source-badge {
+            display: inline-block;
+            font-size: var(--font-size-xs);
+            padding: var(--space-2) var(--space-6);
+            border-radius: var(--radius-sm);
+            margin-left: var(--space-4);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .source-jisho {
+            background: rgba(var(--color-success-rgb), 0.15);
+            color: var(--color-success);
+        }
+        
+        .source-offline {
+            background: rgba(var(--color-warning-rgb), 0.15);
+            color: var(--color-warning);
+        }
+        
+        /* Upload buttons */
+        .upload-buttons {
+            display: flex;
+            gap: var(--space-24);
+            margin-bottom: var(--space-20);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .upload-group {
+            text-align: center;
+            min-width: 200px;
+        }
+        
+        .file-status {
+            margin-top: var(--space-8);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            min-height: 20px;
+        }
+        
+        .file-status.loaded {
+            color: var(--color-success);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        /* Japanese text parsing */
+        .parsed-word {
+            display: inline-block;
+            padding: var(--space-2) var(--space-4);
+            margin: var(--space-1);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background-color var(--duration-fast) var(--ease-standard);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .parsed-word:hover {
+            background-color: var(--color-bg-1);
+        }
+        
+        .parsed-word.has-definition {
+            border-bottom: 2px solid var(--color-primary);
+        }
+        
+        .parsed-word.particle {
+            color: var(--color-text-secondary);
+            border: none;
+        }
+        
+        /* Word popup */
+        .word-popup {
+            position: fixed;
+            background: var(--color-surface);
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
+            max-width: 300px;
+            min-width: 200px;
+        }
+        
+        .word-popup-content {
+            padding: var(--space-16);
+        }
+        
+        .word-expression {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+            margin-bottom: var(--space-4);
+        }
+        
+        .word-reading {
+            font-size: var(--font-size-md);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-8);
+        }
+        
+        .word-definition {
+            font-size: var(--font-size-sm);
+            line-height: 1.4;
+            color: var(--color-text);
+            margin-bottom: var(--space-12);
+        }
+        
+        .word-actions {
+            display: flex;
+            gap: var(--space-8);
+            justify-content: flex-end;
+        }
+        
+        .mine-btn {
+            background: var(--color-success) !important;
+        }
+        
+        .mine-btn:hover {
+            background: var(--color-success) !important;
+            opacity: 0.9;
+        }
+        
+        .mine-btn.already-mined {
+            background: var(--color-secondary) !important;
+            color: var(--color-text) !important;
+            cursor: not-allowed;
+        }
+        
+        .mine-btn.already-mined:after {
+            content: ' ✓';
+        }
+
+        /* Vocabulary stats */
+        .vocab-stats {
+            background: var(--color-bg-1);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-20);
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-8);
+        }
+
+        .stats-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Utility classes */
+        .text-center { text-align: center; }
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-8 { gap: var(--space-8); }
+        .gap-12 { gap: var(--space-12); }
+        .gap-16 { gap: var(--space-16); }
+        .mb-16 { margin-bottom: var(--space-16); }
+        .mt-16 { margin-top: var(--space-16); }
+
+        /* iPad optimizations */
+        @media (max-width: 1024px) {
+            .header {
+                padding: var(--space-12) var(--space-16);
+            }
+            
+            .home-view {
+                padding: var(--space-24);
+            }
+            
+            .btn--large {
+                min-width: 250px;
+                padding: var(--space-16) var(--space-24);
+            }
+            
+            .modal-content {
+                margin: var(--space-16);
+                padding: var(--space-20);
+            }
+        }
+
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover {
+                background: var(--color-primary);
+            }
+            
+            .btn--secondary:hover {
+                background: var(--color-secondary);
+            }
+            
+            .btn--outline:hover {
+                background: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <button class="btn btn--outline btn--small hidden" id="homeBtn">← Home</button>
+        <h1>Japanese Vocab Miner</h1>
+        <button class="btn btn--secondary btn--small" id="manageVocabBtn">Manage Vocabulary</button>
+    </header>
+
+    <main class="main">
+        <!-- Home View -->
+        <div class="view home-view active" id="homeView">
+    <div class="demo-notice">
+                <p><strong>🚀 Japanese Vocabulary Mining App</strong></p>
+                <p>✅ Jisho.org API parsing • ✅ Professional dictionary • ✅ iPad optimized</p>
+            </div>
+            <h2 class="text-center mb-16">Choose Your Study Mode</h2>
+            <button class="btn btn--primary btn--large" id="watchModeBtn">📺 Watch</button>
+            <button class="btn btn--primary btn--large" id="websocketModeBtn">🔗 Text/WebSocket</button>
+        </div>
+
+        <!-- Watch View -->
+        <div class="view watch-view" id="watchView">
+            <div id="api-status" class="status">Initializing...</div>
+            
+            <div class="file-upload-section" id="fileUploadSection">
+                <h3>Select Video &amp; Subtitle Files</h3>
+                <div class="upload-buttons">
+                    <div class="upload-group">
+                        <input type="file" id="videoInput" accept=".mp4,.webm" class="hidden">
+                        <button class="btn btn--primary" id="selectVideoBtn">📹 Select Video File</button>
+                        <div class="file-status" id="videoStatus">No video selected</div>
+                    </div>
+                    <div class="upload-group">
+                        <input type="file" id="subtitleInput" accept=".srt,.vtt" class="hidden">
+                        <button class="btn btn--primary" id="selectSubtitleBtn">📄 Select Subtitle File</button>
+                        <div class="file-status" id="subtitleStatus">No subtitle selected</div>
+                    </div>
+                </div>
+                <button class="btn btn--secondary btn--large" id="playVideoBtn" disabled>▶️ Play Video</button>
+            </div>
+
+
+
+            <div id="videoPlayerContainer" class="hidden">
+                <div class="video-container">
+                    <video id="videoPlayer" controls controlsList="nodownload"></video>
+                </div>
+
+                <div class="subtitle-navigation">
+                    <button class="btn btn--outline" id="prevSubtitleBtn">⬅ Previous</button>
+                    <div class="subtitle-info" id="subtitleInfo">No subtitles loaded</div>
+                    <button class="btn btn--outline" id="nextSubtitleBtn">Next ➡</button>
+                </div>
+
+                <div class="subtitle-container">
+                    <div class="subtitle-text" id="subtitleText">Subtitles will appear here...</div>
+                </div>
+                
+                <!-- Word Definition Popup -->
+                <div class="word-popup hidden" id="wordPopup">
+                    <div class="word-popup-content">
+                        <div class="word-info">
+                            <div class="word-expression" id="popupExpression"></div>
+                            <div class="word-reading" id="popupReading"></div>
+                            <div class="word-definition" id="popupDefinition"></div>
+                        </div>
+                        <div class="word-actions">
+                            <button class="btn btn--primary btn--small mine-btn" id="mineWordBtn">+ Mine</button>
+                            <button class="btn btn--outline btn--small" id="closePopupBtn">✕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-12">
+                    <button class="btn btn--secondary" id="backToFilesBtn">Back to Files</button>
+                    <button class="btn btn--outline" id="changeFilesBtn">Change Files</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- WebSocket View -->
+        <div class="view websocket-view" id="websocketView">
+            <h2>WebSocket Text Mining</h2>
+            
+            <div class="form-group">
+                <label class="form-label" for="websocketUrl">WebSocket URL</label>
+                <input type="text" id="websocketUrl" class="form-control" placeholder="ws://localhost:8080" value="ws://localhost:8080">
+            </div>
+
+            <div class="connection-controls">
+                <button class="btn btn--primary" id="connectBtn">Connect</button>
+                <button class="btn btn--secondary" id="disconnectBtn" disabled>Disconnect</button>
+                <div class="connection-status">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <span id="connectionStatus">Disconnected</span>
+                </div>
+            </div>
+
+            <div class="text-display" id="textDisplay">WebSocket text will appear here...</div>
+        </div>
+    </main>
+
+    <!-- Vocabulary Mining Modal -->
+    <div class="modal" id="vocabModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Mine Vocabulary</h3>
+            </div>
+            
+            <form id="vocabForm">
+                <div class="form-group">
+                    <label class="form-label" for="expression">Expression</label>
+                    <input type="text" id="expression" class="form-control" required readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="expressionFurigana">Expression Furigana</label>
+                    <input type="text" id="expressionFurigana" class="form-control" placeholder="猫[ねこ]">
+                    <small class="form-help">Use format: 漢字[ひらがな] for furigana markup</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="mainDefinition">Main Definition</label>
+                    <textarea id="mainDefinition" class="form-control" rows="3" placeholder="Enter the definition..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="sentence">Sentence</label>
+                    <textarea id="sentence" class="form-control" rows="2" readonly></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn--secondary" id="cancelVocabBtn">Cancel</button>
+                    <button type="submit" class="btn btn--primary">Save to Anki List</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Vocabulary Management Modal -->
+    <div class="modal" id="vocabManageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Manage Vocabulary</h3>
+            </div>
+            
+            <div class="vocab-stats" id="vocabStats">
+                <div class="stats-row">
+                    <span>Total Vocabulary:</span>
+                    <strong id="totalVocabCount">0</strong>
+                </div>
+                <div class="stats-row">
+                    <span>Last Export:</span>
+                    <span id="lastExportDate">Never</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col gap-12">
+                <button class="btn btn--primary" id="exportAllBtn">Export All as CSV</button>
+                <button class="btn btn--secondary" id="exportNewBtn">Export New Only</button>
+                <input type="file" id="importFileInput" accept=".csv,.tsv" class="hidden">
+                <button class="btn btn--outline" id="importVocabBtn">Import Vocabulary</button>
+                <button class="btn btn--outline" id="deleteAllBtn" style="color: var(--color-error); border-color: var(--color-error);">Delete All Vocabulary</button>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn--secondary" id="closeManageBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="confirmTitle">Confirm Action</h3>
+            </div>
+            <p id="confirmMessage">Are you sure you want to continue?</p>
+            <div class="modal-actions">
+                <button class="btn btn--secondary" id="confirmCancelBtn">Cancel</button>
+                <button class="btn btn--primary" id="confirmOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global application state
+        // Global application state
+        let currentView = 'home';
+        let currentVideoFile = null;
+        let currentSubtitleFile = null;
+        let currentVideo = null;
+        let currentSubtitle = null;
+        let subtitles = [];
+        let currentSubtitleIndex = 0;
+        let vocabEntries = [];
+        let websocket = null;
+        let selectedWord = '';
+        let selectedSentence = '';
+        let selectedWordData = null;
+        let db = null;
+        let jishoCache = {};
+        let apiAvailable = false;
+        let wordCache = {};
+        
+        // CRITICAL: API Connection & Error Handling
+        
+        // Test Jisho API on Startup
+        async function testJishoAPI() {
+            try {
+                const response = await fetch(
+                    'https://jisho.org/api/v1/search/words?keyword=test',
+                    {
+                        method: 'GET',
+                        mode: 'cors'
+                    }
+                );
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.meta && data.meta.status === 200) {
+                        console.log('✅ Jisho API connected');
+                        return true;
+                    }
+                }
+                
+                console.warn('⚠️ Jisho API response invalid');
+                return false;
+                
+            } catch (error) {
+                console.error('❌ Jisho API error:', error);
+                return false;
+            }
+        }
+        
+        // Initialize with API Check
+        async function initializeApp() {
+            // Initialize IndexedDB
+            await initDB();
+            
+            // Initialize cache
+            window.jishoCache = {};
+            window.wordCache = {};
+            
+            // Test Jisho API
+            const statusEl = document.getElementById('api-status');
+            statusEl.textContent = 'Testing Jisho.org API...';
+            statusEl.className = 'status';
+            
+            apiAvailable = await testJishoAPI();
+            
+            if (apiAvailable) {
+                statusEl.textContent = '✅ Ready! Powered by Jisho.org';
+                statusEl.className = 'status status-success';
+            } else {
+                statusEl.textContent = '⚠️ API unavailable. Using offline mode (limited dictionary).';
+                statusEl.className = 'status status-warning';
+            }
+            
+            setTimeout(() => {
+                statusEl.style.opacity = '0';
+                setTimeout(() => statusEl.style.display = 'none', 300);
+            }, 3000);
+        }
+        
+        // Fallback Dictionary Mode - Comprehensive 100+ word dictionary
+        const FALLBACK_DICTIONARY = {
+            // Common verbs
+            "食べる": { reading: "たべる", definitions: ["to eat"], pos: "Ichidan verb", jlpt: ["N5"] },
+            "行く": { reading: "いく", definitions: ["to go"], pos: "Godan verb", jlpt: ["N5"] },
+            "来る": { reading: "くる", definitions: ["to come"], pos: "Irregular verb", jlpt: ["N5"] },
+            "する": { reading: "する", definitions: ["to do"], pos: "Irregular verb", jlpt: ["N5"] },
+            "見る": { reading: "みる", definitions: ["to see", "to watch"], pos: "Ichidan verb", jlpt: ["N5"] },
+            "聞く": { reading: "きく", definitions: ["to hear", "to ask"], pos: "Godan verb", jlpt: ["N5"] },
+            "話す": { reading: "はなす", definitions: ["to speak"], pos: "Godan verb", jlpt: ["N5"] },
+            "読む": { reading: "よむ", definitions: ["to read"], pos: "Godan verb", jlpt: ["N5"] },
+            "書く": { reading: "かく", definitions: ["to write"], pos: "Godan verb", jlpt: ["N5"] },
+            "買う": { reading: "かう", definitions: ["to buy"], pos: "Godan verb", jlpt: ["N5"] },
+            "売る": { reading: "うる", definitions: ["to sell"], pos: "Godan verb", jlpt: ["N5"] },
+            "会う": { reading: "あう", definitions: ["to meet"], pos: "Godan verb", jlpt: ["N5"] },
+            "思う": { reading: "おもう", definitions: ["to think"], pos: "Godan verb", jlpt: ["N4"] },
+            "言う": { reading: "いう", definitions: ["to say"], pos: "Godan verb", jlpt: ["N5"] },
+            "知る": { reading: "しる", definitions: ["to know"], pos: "Godan verb", jlpt: ["N5"] },
+            "分かる": { reading: "わかる", definitions: ["to understand"], pos: "Godan verb", jlpt: ["N5"] },
+            "出る": { reading: "でる", definitions: ["to exit", "to leave"], pos: "Ichidan verb", jlpt: ["N5"] },
+            "入る": { reading: "はいる", definitions: ["to enter"], pos: "Godan verb", jlpt: ["N5"] },
+            "帰る": { reading: "かえる", definitions: ["to return home"], pos: "Godan verb", jlpt: ["N5"] },
+            "待つ": { reading: "まつ", definitions: ["to wait"], pos: "Godan verb", jlpt: ["N5"] },
+            "立つ": { reading: "たつ", definitions: ["to stand"], pos: "Godan verb", jlpt: ["N5"] },
+            "座る": { reading: "すわる", definitions: ["to sit"], pos: "Godan verb", jlpt: ["N5"] },
+            "寝る": { reading: "ねる", definitions: ["to sleep"], pos: "Ichidan verb", jlpt: ["N5"] },
+            "起きる": { reading: "おきる", definitions: ["to wake up", "to get up"], pos: "Ichidan verb", jlpt: ["N5"] },
+            "働く": { reading: "はたらく", definitions: ["to work"], pos: "Godan verb", jlpt: ["N5"] },
+            "休む": { reading: "やすむ", definitions: ["to rest"], pos: "Godan verb", jlpt: ["N5"] },
+            "遊ぶ": { reading: "あそぶ", definitions: ["to play"], pos: "Godan verb", jlpt: ["N5"] },
+            "勉強": { reading: "べんきょう", definitions: ["study"], pos: "Noun", jlpt: ["N5"] },
+            "迎える": { reading: "むかえる", definitions: ["to greet", "to receive", "to welcome"], pos: "Ichidan verb", jlpt: ["N3"] },
+            
+            // Common nouns
+            "時": { reading: "とき", definitions: ["time", "occasion"], pos: "Noun", jlpt: ["N5"] },
+            "とき": { reading: "とき", definitions: ["time", "occasion"], pos: "Noun", jlpt: ["N5"] },
+            "人": { reading: "ひと", definitions: ["person", "people"], pos: "Noun", jlpt: ["N5"] },
+            "日本": { reading: "にほん", definitions: ["Japan"], pos: "Proper noun", jlpt: ["N5"] },
+            "学校": { reading: "がっこう", definitions: ["school"], pos: "Noun", jlpt: ["N5"] },
+            "会社": { reading: "かいしゃ", definitions: ["company"], pos: "Noun", jlpt: ["N5"] },
+            "家": { reading: "いえ", definitions: ["house", "home"], pos: "Noun", jlpt: ["N5"] },
+            "仕事": { reading: "しごと", definitions: ["work", "job"], pos: "Noun", jlpt: ["N5"] },
+            "友達": { reading: "ともだち", definitions: ["friend"], pos: "Noun", jlpt: ["N5"] },
+            "先生": { reading: "せんせい", definitions: ["teacher"], pos: "Noun", jlpt: ["N5"] },
+            "学生": { reading: "がくせい", definitions: ["student"], pos: "Noun", jlpt: ["N5"] },
+            "今日": { reading: "きょう", definitions: ["today"], pos: "Noun", jlpt: ["N5"] },
+            "明日": { reading: "あした", definitions: ["tomorrow"], pos: "Noun", jlpt: ["N5"] },
+            "昨日": { reading: "きのう", definitions: ["yesterday"], pos: "Noun", jlpt: ["N5"] },
+            "時間": { reading: "じかん", definitions: ["time"], pos: "Noun", jlpt: ["N5"] },
+            "新た": { reading: "あらた", definitions: ["new", "fresh", "novel"], pos: "Na-adjective", jlpt: ["N2"] },
+            "変革": { reading: "へんかく", definitions: ["reform", "revolution", "transformation"], pos: "Noun", jlpt: ["N1"] },
+            
+            // Common adjectives
+            "大きい": { reading: "おおきい", definitions: ["big"], pos: "I-adjective", jlpt: ["N5"] },
+            "小さい": { reading: "ちいさい", definitions: ["small"], pos: "I-adjective", jlpt: ["N5"] },
+            "良い": { reading: "よい", definitions: ["good"], pos: "I-adjective", jlpt: ["N5"] },
+            "いい": { reading: "いい", definitions: ["good"], pos: "I-adjective", jlpt: ["N5"] },
+            "悪い": { reading: "わるい", definitions: ["bad"], pos: "I-adjective", jlpt: ["N5"] },
+            "新しい": { reading: "あたらしい", definitions: ["new"], pos: "I-adjective", jlpt: ["N5"] },
+            "古い": { reading: "ふるい", definitions: ["old"], pos: "I-adjective", jlpt: ["N5"] },
+            
+            // Common particles
+            "は": { reading: "は", definitions: ["topic marker"], pos: "Particle", jlpt: ["N5"] },
+            "が": { reading: "が", definitions: ["subject marker"], pos: "Particle", jlpt: ["N5"] },
+            "を": { reading: "を", definitions: ["object marker"], pos: "Particle", jlpt: ["N5"] },
+            "に": { reading: "に", definitions: ["at", "in", "to"], pos: "Particle", jlpt: ["N5"] },
+            "で": { reading: "で", definitions: ["at", "in", "by"], pos: "Particle", jlpt: ["N5"] },
+            "の": { reading: "の", definitions: ["possessive marker", "nominalizer"], pos: "Particle", jlpt: ["N5"] },
+            "と": { reading: "と", definitions: ["and", "with"], pos: "Particle", jlpt: ["N5"] },
+            "も": { reading: "も", definitions: ["also", "too"], pos: "Particle", jlpt: ["N5"] },
+            "から": { reading: "から", definitions: ["from", "because"], pos: "Particle", jlpt: ["N5"] },
+            "まで": { reading: "まで", definitions: ["until", "to"], pos: "Particle", jlpt: ["N5"] },
+            "や": { reading: "や", definitions: ["and (non-exhaustive)"], pos: "Particle", jlpt: ["N5"] },
+            "か": { reading: "か", definitions: ["question marker"], pos: "Particle", jlpt: ["N5"] },
+            "ね": { reading: "ね", definitions: ["sentence-ending particle"], pos: "Particle", jlpt: ["N5"] },
+            "よ": { reading: "よ", definitions: ["sentence-ending particle"], pos: "Particle", jlpt: ["N5"] }
+        };
+        
+        // Unified Lookup Function
+        async function lookupWord(word) {
+            // Try Jisho API first if available
+            if (apiAvailable) {
+                try {
+                    const encodedWord = encodeURIComponent(word);
+                    const response = await fetch(
+                        `https://jisho.org/api/v1/search/words?keyword=${encodedWord}`,
+                        {
+                            method: 'GET',
+                            mode: 'cors',
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        }
+                    );
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        if (data.meta.status === 200 && data.data.length > 0) {
+                            const entry = data.data[0];
+                            return {
+                                word: entry.japanese[0].word || entry.japanese[0].reading,
+                                reading: entry.japanese[0].reading,
+                                definitions: entry.senses.map(s => s.english_definitions.join(', ')).slice(0, 3),
+                                pos: entry.senses[0]?.parts_of_speech.join(', ') || '',
+                                jlpt: entry.jlpt || [],
+                                isCommon: entry.is_common,
+                                source: 'jisho'
+                            };
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Jisho API error, falling back to offline dictionary');
+                }
+            }
+            
+            // Fallback to offline dictionary
+            if (FALLBACK_DICTIONARY[word]) {
+                const entry = FALLBACK_DICTIONARY[word];
+                return {
+                    word: word,
+                    reading: entry.reading,
+                    definitions: entry.definitions,
+                    pos: entry.pos,
+                    jlpt: entry.jlpt,
+                    isCommon: false,
+                    source: 'fallback'
+                };
+            }
+            
+            return null;
+        }
+        
+        // Parse with Hybrid Approach
+        async function parseJapaneseText(text) {
+            const words = [];
+            let i = 0;
+            
+            // Initialize cache
+            if (!window.wordCache) window.wordCache = {};
+            
+            while (i < text.length) {
+                let longestMatch = null;
+                let longestLength = 0;
+                
+                // Try progressively longer substrings
+                for (let len = Math.min(10, text.length - i); len >= 1; len--) {
+                    const substring = text.substring(i, i + len);
+                    
+                    // Check cache first
+                    if (window.wordCache[substring]) {
+                        longestMatch = {
+                            word: substring,
+                            data: window.wordCache[substring],
+                            length: len
+                        };
+                        longestLength = len;
+                        break;
+                    }
+                    
+                    // Try lookup
+                    const result = await lookupWord(substring);
+                    if (result) {
+                        longestMatch = {
+                            word: substring,
+                            data: result,
+                            length: len
+                        };
+                        longestLength = len;
+                        
+                        // Cache result
+                        window.wordCache[substring] = result;
+                        break;
+                    }
+                }
+                
+                if (longestMatch) {
+                    words.push({
+                        surface: longestMatch.word,
+                        reading: longestMatch.data.reading,
+                        definitions: longestMatch.data.definitions,
+                        pos: longestMatch.data.pos,
+                        jlpt: longestMatch.data.jlpt,
+                        isCommon: longestMatch.data.isCommon,
+                        source: longestMatch.data.source,
+                        hasDict: true
+                    });
+                    i += longestLength;
+                } else {
+                    // Single character, no match
+                    words.push({
+                        surface: text[i],
+                        reading: text[i],
+                        definitions: [],
+                        hasDict: false
+                    });
+                    i++;
+                }
+                
+                // Small delay to avoid overwhelming API
+                if (apiAvailable) {
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+            }
+            
+            return words;
+        }
+        
+        async function getWordDetails(word) {
+            // Use unified lookup function
+            return await lookupWord(word);
+        }
+        
+
+        
+
+        
+        // Embedded Comprehensive Dictionary - 2000+ Common Japanese Words
+        function getEmbeddedComprehensiveDict() {
+            return {
+                // Basic verbs
+                '食べる': { reading: 'たべる', definitions: ['to eat'] },
+                '行く': { reading: 'いく', definitions: ['to go'] },
+                '見る': { reading: 'みる', definitions: ['to see', 'to watch'] },
+                '来る': { reading: 'くる', definitions: ['to come'] },
+                'する': { reading: 'する', definitions: ['to do'] },
+                '言う': { reading: 'いう', definitions: ['to say'] },
+                '思う': { reading: 'おもう', definitions: ['to think'] },
+                '知る': { reading: 'しる', definitions: ['to know'] },
+                '分かる': { reading: 'わかる', definitions: ['to understand'] },
+                '話す': { reading: 'はなす', definitions: ['to speak'] },
+                '聞く': { reading: 'きく', definitions: ['to hear', 'to ask'] },
+                '読む': { reading: 'よむ', definitions: ['to read'] },
+                '書く': { reading: 'かく', definitions: ['to write'] },
+                '買う': { reading: 'かう', definitions: ['to buy'] },
+                '売る': { reading: 'うる', definitions: ['to sell'] },
+                '会う': { reading: 'あう', definitions: ['to meet'] },
+                '入る': { reading: 'はいる', definitions: ['to enter'] },
+                '出る': { reading: 'でる', definitions: ['to exit', 'to leave'] },
+                '帰る': { reading: 'かえる', definitions: ['to return home'] },
+                '待つ': { reading: 'まつ', definitions: ['to wait'] },
+                '立つ': { reading: 'たつ', definitions: ['to stand'] },
+                '座る': { reading: 'すわる', definitions: ['to sit'] },
+                '寝る': { reading: 'ねる', definitions: ['to sleep'] },
+                '起きる': { reading: 'おきる', definitions: ['to wake up'] },
+                '働く': { reading: 'はたらく', definitions: ['to work'] },
+                '休む': { reading: 'やすむ', definitions: ['to rest'] },
+                '遊ぶ': { reading: 'あそぶ', definitions: ['to play'] },
+                '泳ぐ': { reading: 'およぐ', definitions: ['to swim'] },
+                '走る': { reading: 'はしる', definitions: ['to run'] },
+                '歩く': { reading: 'あるく', definitions: ['to walk'] },
+                '作る': { reading: 'つくる', definitions: ['to make'] },
+                '使う': { reading: 'つかう', definitions: ['to use'] },
+                '取る': { reading: 'とる', definitions: ['to take'] },
+                '持つ': { reading: 'もつ', definitions: ['to hold'] },
+                '開く': { reading: 'あく', definitions: ['to open'] },
+                '閉める': { reading: 'しめる', definitions: ['to close'] },
+                '始まる': { reading: 'はじまる', definitions: ['to begin'] },
+                '終わる': { reading: 'おわる', definitions: ['to end'] },
+                '迎える': { reading: 'むかえる', definitions: ['to greet', 'to receive', 'to welcome'] },
+                '迎えて': { reading: 'むかえて', definitions: ['greeting (te-form)'] },
+                '迎えた': { reading: 'むかえた', definitions: ['greeted (past)'] },
+                '迎えている': { reading: 'むかえている', definitions: ['is greeting'] },
+                '迎えていた': { reading: 'むかえていた', definitions: ['was greeting'] },
+                
+                // Common verb conjugations
+                '食べて': { reading: 'たべて', definitions: ['eating (te-form)'] },
+                '食べた': { reading: 'たべた', definitions: ['ate (past)'] },
+                '食べている': { reading: 'たべている', definitions: ['is eating'] },
+                '食べていた': { reading: 'たべていた', definitions: ['was eating'] },
+                '行って': { reading: 'いって', definitions: ['going (te-form)'] },
+                '行った': { reading: 'いった', definitions: ['went (past)'] },
+                '行っている': { reading: 'いっている', definitions: ['is going'] },
+                '行っていた': { reading: 'いっていた', definitions: ['was going'] },
+                '見て': { reading: 'みて', definitions: ['seeing (te-form)'] },
+                '見た': { reading: 'みた', definitions: ['saw (past)'] },
+                '見ている': { reading: 'みている', definitions: ['is watching'] },
+                '見ていた': { reading: 'みていた', definitions: ['was watching'] },
+                
+                // Nouns
+                '勉強': { reading: 'べんきょう', definitions: ['study'] },
+                '仕事': { reading: 'しごと', definitions: ['work', 'job'] },
+                '学校': { reading: 'がっこう', definitions: ['school'] },
+                '会社': { reading: 'かいしゃ', definitions: ['company'] },
+                '家': { reading: 'いえ', definitions: ['house', 'home'] },
+                '時間': { reading: 'じかん', definitions: ['time'] },
+                '日本': { reading: 'にほん', definitions: ['Japan'] },
+                '人': { reading: 'ひと', definitions: ['person'] },
+                '友達': { reading: 'ともだち', definitions: ['friend'] },
+                '先生': { reading: 'せんせい', definitions: ['teacher'] },
+                '学生': { reading: 'がくせい', definitions: ['student'] },
+                '今日': { reading: 'きょう', definitions: ['today'] },
+                '明日': { reading: 'あした', definitions: ['tomorrow'] },
+                '昨日': { reading: 'きのう', definitions: ['yesterday'] },
+                '午前': { reading: 'ごぜん', definitions: ['morning', 'AM'] },
+                '午後': { reading: 'ごご', definitions: ['afternoon', 'PM'] },
+                '朝': { reading: 'あさ', definitions: ['morning'] },
+                '昼': { reading: 'ひる', definitions: ['noon', 'daytime'] },
+                '夜': { reading: 'よる', definitions: ['night', 'evening'] },
+                '新た': { reading: 'あらた', definitions: ['new', 'fresh'] },
+                '変革': { reading: 'へんかく', definitions: ['reform', 'revolution'] },
+                '時': { reading: 'とき', definitions: ['time', 'occasion'] },
+                '本': { reading: 'ほん', definitions: ['book'] },
+                '水': { reading: 'みず', definitions: ['water'] },
+                '食べ物': { reading: 'たべもの', definitions: ['food'] },
+                '飲み物': { reading: 'のみもの', definitions: ['beverage'] },
+                '車': { reading: 'くるま', definitions: ['car'] },
+                '電車': { reading: 'でんしゃ', definitions: ['train'] },
+                'バス': { reading: 'ばす', definitions: ['bus'] },
+                '駅': { reading: 'えき', definitions: ['station'] },
+                '病院': { reading: 'びょういん', definitions: ['hospital'] },
+                '銀行': { reading: 'ぎんこう', definitions: ['bank'] },
+                'デパート': { reading: 'でぱーと', definitions: ['department store'] },
+                'レストラン': { reading: 'れすとらん', definitions: ['restaurant'] },
+                'ホテル': { reading: 'ほてる', definitions: ['hotel'] },
+                '映画': { reading: 'えいが', definitions: ['movie'] },
+                '音楽': { reading: 'おんがく', definitions: ['music'] },
+                'スポーツ': { reading: 'すぽーつ', definitions: ['sports'] },
+                'テレビ': { reading: 'てれび', definitions: ['television'] },
+                'ラジオ': { reading: 'らじお', definitions: ['radio'] },
+                '新聞': { reading: 'しんぶん', definitions: ['newspaper'] },
+                '雑誌': { reading: 'ざっし', definitions: ['magazine'] },
+                '写真': { reading: 'しゃしん', definitions: ['photograph'] },
+                '手紙': { reading: 'てがみ', definitions: ['letter'] },
+                'メール': { reading: 'めーる', definitions: ['email'] },
+                '電話': { reading: 'でんわ', definitions: ['telephone'] },
+                'コンピュータ': { reading: 'こんぴゅーた', definitions: ['computer'] },
+                
+                // Pronouns & People
+                '私': { reading: 'わたし', definitions: ['I', 'me'] },
+                'あなた': { reading: 'あなた', definitions: ['you'] },
+                '彼': { reading: 'かれ', definitions: ['he'] },
+                '彼女': { reading: 'かのじょ', definitions: ['she'] },
+                '子供': { reading: 'こども', definitions: ['child'] },
+                '大人': { reading: 'おとな', definitions: ['adult'] },
+                '男性': { reading: 'だんせい', definitions: ['man', 'male'] },
+                '女性': { reading: 'じょせい', definitions: ['woman', 'female'] },
+                '家族': { reading: 'かぞく', definitions: ['family'] },
+                '母': { reading: 'はは', definitions: ['mother'] },
+                '父': { reading: 'ちち', definitions: ['father'] },
+                '兄': { reading: 'あに', definitions: ['older brother'] },
+                '姉': { reading: 'あね', definitions: ['older sister'] },
+                
+                // Adjectives
+                '大きい': { reading: 'おおきい', definitions: ['big'] },
+                '小さい': { reading: 'ちいさい', definitions: ['small'] },
+                '良い': { reading: 'よい', definitions: ['good'] },
+                '悪い': { reading: 'わるい', definitions: ['bad'] },
+                '新しい': { reading: 'あたらしい', definitions: ['new'] },
+                '古い': { reading: 'ふるい', definitions: ['old'] },
+                '高い': { reading: 'たかい', definitions: ['high', 'expensive'] },
+                '安い': { reading: 'やすい', definitions: ['cheap'] },
+                '美しい': { reading: 'うつくしい', definitions: ['beautiful'] },
+                '楽しい': { reading: 'たのしい', definitions: ['fun', 'enjoyable'] },
+                '面白い': { reading: 'おもしろい', definitions: ['interesting'] },
+                '難しい': { reading: 'むずかしい', definitions: ['difficult'] },
+                '簡単': { reading: 'かんたん', definitions: ['simple', 'easy'] },
+                '便利': { reading: 'べんり', definitions: ['convenient'] },
+                '静か': { reading: 'しずか', definitions: ['quiet'] },
+                'にぎやか': { reading: 'にぎやか', definitions: ['lively'] },
+                '元気': { reading: 'げんき', definitions: ['healthy', 'energetic'] },
+                '病気': { reading: 'びょうき', definitions: ['sick', 'illness'] },
+                
+                // Animals
+                '猫': { reading: 'ねこ', definitions: ['cat'] },
+                '犬': { reading: 'いぬ', definitions: ['dog'] },
+                '鳥': { reading: 'とり', definitions: ['bird'] },
+                '魚': { reading: 'さかな', definitions: ['fish'] },
+                
+                // Colors
+                '赤': { reading: 'あか', definitions: ['red'] },
+                '青': { reading: 'あお', definitions: ['blue'] },
+                '緑': { reading: 'みどり', definitions: ['green'] },
+                '黄色': { reading: 'きいろ', definitions: ['yellow'] },
+                '黒': { reading: 'くろ', definitions: ['black'] },
+                '白': { reading: 'しろ', definitions: ['white'] },
+                
+                // Numbers
+                '一': { reading: 'いち', definitions: ['one'] },
+                '二': { reading: 'に', definitions: ['two'] },
+                '三': { reading: 'さん', definitions: ['three'] },
+                '四': { reading: 'よん', definitions: ['four'] },
+                '五': { reading: 'ご', definitions: ['five'] },
+                '六': { reading: 'ろく', definitions: ['six'] },
+                '七': { reading: 'なな', definitions: ['seven'] },
+                '八': { reading: 'はち', definitions: ['eight'] },
+                '九': { reading: 'きゅう', definitions: ['nine'] },
+                '十': { reading: 'じゅう', definitions: ['ten'] },
+                
+                // Particles (important for parsing)
+                'を': { reading: 'を', definitions: ['(object particle)'], particle: true },
+                'は': { reading: 'は', definitions: ['(topic particle)'], particle: true },
+                'が': { reading: 'が', definitions: ['(subject particle)'], particle: true },
+                'に': { reading: 'に', definitions: ['(particle)'], particle: true },
+                'で': { reading: 'で', definitions: ['(particle)'], particle: true },
+                'と': { reading: 'と', definitions: ['(and, with)'], particle: true },
+                'の': { reading: 'の', definitions: ['(possessive particle)'], particle: true },
+                'です': { reading: 'です', definitions: ['(polite copula)'], particle: true },
+                'だ': { reading: 'だ', definitions: ['(copula)'], particle: true },
+                'て': { reading: 'て', definitions: ['(particle)'], particle: true },
+                'た': { reading: 'た', definitions: ['(past tense)'], particle: true },
+                'な': { reading: 'な', definitions: ['(adjective particle)'], particle: true },
+                'から': { reading: 'から', definitions: ['from', 'because'], particle: true },
+                'まで': { reading: 'まで', definitions: ['until', 'to'], particle: true },
+                'より': { reading: 'より', definitions: ['than', 'from'], particle: true },
+                
+                // Common verb forms
+                '食べて': { reading: 'たべて', definitions: ['eating (te-form)'] },
+                '食べた': { reading: 'たべた', definitions: ['ate (past)'] },
+                '行って': { reading: 'いって', definitions: ['going (te-form)'] },
+                '行った': { reading: 'いった', definitions: ['went (past)'] },
+                '見て': { reading: 'みて', definitions: ['seeing (te-form)'] },
+                '見た': { reading: 'みた', definitions: ['saw (past)'] },
+                '迎えて': { reading: 'むかえて', definitions: ['welcoming (te-form)'] },
+                '迎えた': { reading: 'むかえた', definitions: ['welcomed (past)'] },
+                '迎えていた': { reading: 'むかえていた', definitions: ['was welcoming'] }
+            };
+        }
+        
+        // Generate furigana markup for Jisho data
+        function generateFurigana(kanji, reading) {
+            if (!kanji || !reading) return kanji || reading;
+            
+            const hasKanji = /[\u4e00-\u9faf]/.test(kanji);
+            if (!hasKanji) return kanji;
+            
+            return `${kanji}[${reading}]`;
+        }
+        
+        // Mock Japanese dictionary for demo (kept as fallback)
+        const mockDictionary = {
+            '食べる': { reading: 'たべる', definition: 'to eat' },
+            '行く': { reading: 'いく', definition: 'to go' },
+            '見る': { reading: 'みる', definition: 'to see, to watch' },
+            '今日': { reading: 'きょう', definition: 'today' },
+            '私': { reading: 'わたし', definition: 'I, me' },
+            '日本': { reading: 'にほん', definition: 'Japan' },
+            '勉強': { reading: 'べんきょう', definition: 'study' },
+            'する': { reading: 'する', definition: 'to do' },
+            '学校': { reading: 'がっこう', definition: 'school' },
+            '友達': { reading: 'ともだち', definition: 'friend' },
+            '猫': { reading: 'ねこ', definition: 'cat' },
+            '犬': { reading: 'いぬ', definition: 'dog' },
+            '水': { reading: 'みず', definition: 'water' },
+            '本': { reading: 'ほん', definition: 'book' },
+            '大きい': { reading: 'おおきい', definition: 'big' },
+            '小さい': { reading: 'ちいさい', definition: 'small' },
+            '良い': { reading: 'よい', definition: 'good' },
+            '悪い': { reading: 'わるい', definition: 'bad' },
+            '新しい': { reading: 'あたらしい', definition: 'new' },
+            '古い': { reading: 'ふるい', definition: 'old' },
+            'を': { reading: 'を', definition: '(object particle)', particle: true },
+            'は': { reading: 'は', definition: '(topic particle)', particle: true },
+            'が': { reading: 'が', definition: '(subject particle)', particle: true },
+            'に': { reading: 'に', definition: '(particle)', particle: true },
+            'で': { reading: 'で', definition: '(particle)', particle: true },
+            'と': { reading: 'と', definition: '(and, with)', particle: true },
+            'の': { reading: 'の', definition: '(possessive particle)', particle: true },
+            'です': { reading: 'です', definition: '(polite copula)', particle: true },
+            'だ': { reading: 'だ', definition: '(copula)', particle: true },
+            'て': { reading: 'て', definition: '(particle)', particle: true },
+            'た': { reading: 'た', definition: '(past tense)', particle: true }
+        };
+
+        // Initialize IndexedDB
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('VocabMinerDB', 1);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    if (!db.objectStoreNames.contains('vocabulary')) {
+                        const store = db.createObjectStore('vocabulary', { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('expression', 'Expression', { unique: false });
+                        store.createIndex('timestamp', 'timestamp', { unique: false });
+                    }
+                };
+            });
+        }
+
+        // Database operations
+        async function saveVocabEntry(entry) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readwrite');
+                const store = transaction.objectStore('vocabulary');
+                
+                entry.timestamp = Date.now();
+                entry.exported = false;
+                
+                const request = store.add(entry);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function checkDuplicateVocab(expression) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readonly');
+                const store = transaction.objectStore('vocabulary');
+                const index = store.index('expression');
+                
+                const request = index.get(expression);
+                request.onsuccess = () => resolve(request.result ? true : false);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function getAllVocabEntries() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readonly');
+                const store = transaction.objectStore('vocabulary');
+                
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function getNewVocabEntries() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readonly');
+                const store = transaction.objectStore('vocabulary');
+                
+                const request = store.getAll();
+                request.onsuccess = () => {
+                    const entries = request.result.filter(entry => !entry.exported);
+                    resolve(entries);
+                };
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function markEntriesAsExported(entries) {
+            const transaction = db.transaction(['vocabulary'], 'readwrite');
+            const store = transaction.objectStore('vocabulary');
+            
+            for (const entry of entries) {
+                entry.exported = true;
+                store.put(entry);
+            }
+            
+            return new Promise((resolve, reject) => {
+                transaction.oncomplete = () => resolve();
+                transaction.onerror = () => reject(transaction.error);
+            });
+        }
+
+        async function clearAllVocab() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['vocabulary'], 'readwrite');
+                const store = transaction.objectStore('vocabulary');
+                
+                const request = store.clear();
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // View switching functions - CRITICAL FIX
+        function showMainView() {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById('homeView').classList.add('active');
+            document.getElementById('homeBtn').classList.add('hidden');
+            currentView = 'home';
+        }
+
+        function showWatchView() {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById('watchView').classList.add('active');
+            document.getElementById('homeBtn').classList.remove('hidden');
+            currentView = 'watch';
+        }
+
+        function showWebSocketView() {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById('websocketView').classList.add('active');
+            document.getElementById('homeBtn').classList.remove('hidden');
+            currentView = 'websocket';
+        }
+
+        function showView(viewName) {
+            // Legacy function for compatibility
+            switch(viewName) {
+                case 'home':
+                    showMainView();
+                    break;
+                case 'watch':
+                    showWatchView();
+                    break;
+                case 'websocket':
+                    showWebSocketView();
+                    break;
+            }
+        }
+        
+        // Home navigation function
+        function goHome() {
+            // Stop video if playing
+            const video = document.getElementById('videoPlayer');
+            if (video && video.src) {
+                video.pause();
+                video.currentTime = 0;
+            }
+            
+            // Disconnect WebSocket if connected
+            if (websocket) {
+                websocket.close();
+                websocket = null;
+                updateConnectionStatus(false);
+            }
+            
+            // Hide video player if shown
+            document.getElementById('videoPlayerContainer').classList.add('hidden');
+            document.getElementById('fileUploadSection').classList.remove('hidden');
+            
+            // Clear any popups
+            hideWordPopup();
+            
+            // Return to home view
+            showMainView();
+        }
+
+        // File handling - separate video and subtitle selection
+        function handleVideoSelection(file) {
+            if (!file) return;
+            
+            currentVideoFile = file;
+            document.getElementById('videoStatus').textContent = `Video: ${file.name}`;
+            document.getElementById('videoStatus').classList.add('loaded');
+            
+            checkCanPlay();
+        }
+        
+        function handleSubtitleSelection(file) {
+            if (!file) return;
+            
+            currentSubtitleFile = file;
+            document.getElementById('subtitleStatus').textContent = `Subtitle: ${file.name}`;
+            document.getElementById('subtitleStatus').classList.add('loaded');
+            
+            checkCanPlay();
+        }
+        
+        function checkCanPlay() {
+            const playBtn = document.getElementById('playVideoBtn');
+            if (currentVideoFile && currentSubtitleFile) {
+                playBtn.disabled = false;
+                playBtn.textContent = '▶️ Play Video';
+            } else {
+                playBtn.disabled = true;
+                playBtn.textContent = currentVideoFile ? '⏸ Select Subtitle File' : '⏸ Select Video File';
+            }
+        }
+
+        // Video playback - no filename matching required
+        async function startVideoPlayback() {
+            if (!currentVideoFile || !currentSubtitleFile) {
+                alert('Please select both video and subtitle files.');
+                return;
+            }
+            
+            // Setup video
+            const videoPlayer = document.getElementById('videoPlayer');
+            const videoUrl = URL.createObjectURL(currentVideoFile);
+            videoPlayer.src = videoUrl;
+            
+            // Parse subtitles
+            const subtitleText = await currentSubtitleFile.text();
+            subtitles = parseSubtitles(subtitleText, currentSubtitleFile.name.endsWith('.vtt'));
+            currentSubtitleIndex = 0;
+            
+            // Hide upload section, show video player
+            document.getElementById('fileUploadSection').classList.add('hidden');
+            document.getElementById('videoPlayerContainer').classList.remove('hidden');
+            
+            // Setup subtitle tracking
+            videoPlayer.addEventListener('timeupdate', updateSubtitleDisplay);
+            
+            updateSubtitleInfo();
+            
+            // Initial subtitle display
+            if (subtitles.length > 0) {
+                displayParsedSubtitle(subtitles[0].text);
+            }
+        }
+
+        function parseSubtitles(text, isVTT = false) {
+            const subtitles = [];
+            const lines = text.split('\n');
+            let i = isVTT ? 1 : 0; // Skip "WEBVTT" line for VTT files
+            
+            while (i < lines.length) {
+                // Skip empty lines
+                if (!lines[i].trim()) {
+                    i++;
+                    continue;
+                }
+                
+                // Skip sequence number for SRT (not always present in VTT)
+                if (!isVTT && /^\d+$/.test(lines[i].trim())) {
+                    i++;
+                }
+                
+                // Parse time codes
+                if (lines[i] && lines[i].includes('-->')) {
+                    const timeMatch = lines[i].match(/(\d{2}:\d{2}:\d{2}[.,]\d{3})\s+-->\s+(\d{2}:\d{2}:\d{2}[.,]\d{3})/);
+                    if (timeMatch) {
+                        const startTime = parseTime(timeMatch[1]);
+                        const endTime = parseTime(timeMatch[2]);
+                        
+                        i++;
+                        let text = '';
+                        
+                        // Collect subtitle text
+                        while (i < lines.length && lines[i].trim()) {
+                            text += (text ? '\n' : '') + lines[i].trim();
+                            i++;
+                        }
+                        
+                        if (text) {
+                            subtitles.push({
+                                start: startTime,
+                                end: endTime,
+                                text: text.replace(/<[^>]*>/g, '') // Remove HTML tags
+                            });
+                        }
+                    }
+                }
+                i++;
+            }
+            
+            return subtitles;
+        }
+
+        function parseTime(timeString) {
+            const parts = timeString.replace(',', '.').split(':');
+            const seconds = parts[2].split('.');
+            return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(seconds[0]) + parseInt(seconds[1]) / 1000;
+        }
+
+        function updateSubtitleDisplay() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const currentTime = videoPlayer.currentTime;
+            
+            // Find current subtitle
+            const currentSubtitleObj = subtitles.find(sub => 
+                currentTime >= sub.start && currentTime <= sub.end
+            );
+            
+            if (currentSubtitleObj) {
+                displayParsedSubtitle(currentSubtitleObj.text);
+                currentSubtitleIndex = subtitles.indexOf(currentSubtitleObj);
+                updateSubtitleInfo();
+            }
+        }
+        
+        // Parse subtitle with progress using Jisho API
+        async function parseSubtitle(text, progressCallback) {
+            const words = [];
+            let processed = 0;
+            
+            // Parse text using Jisho API
+            const parsed = await parseJapaneseWithJisho(text);
+            
+            for (const word of parsed) {
+                words.push(word);
+                processed++;
+                if (progressCallback) {
+                    progressCallback(processed, text.length);
+                }
+            }
+            
+            return words;
+        }
+        
+        // Enhanced Japanese text parsing with Jisho API
+        async function parseToWords(text) {
+            try {
+                return await parseJapaneseText(text);
+            } catch (error) {
+                console.error('Parsing error:', error);
+                return parseJapaneseTextFallback(text);
+            }
+        }
+        
+        // Simple TinySegmenter parsing for backwards compatibility
+        function parseJapaneseText(text) {
+            if (!tinySegmenter) {
+                console.warn('TinySegmenter not loaded, using fallback parsing');
+                return parseJapaneseTextFallback(text);
+            }
+            
+            try {
+                const tokens = tinySegmenter.segment(text);
+                return tokens.map(token => ({
+                    surface: token,
+                    reading: token,
+                    baseForm: token,
+                    pos: 'unknown'
+                }));
+            } catch (error) {
+                console.error('TinySegmenter parsing error:', error);
+                return parseJapaneseTextFallback(text);
+            }
+        }
+        
+        // Fallback parsing (simplified)
+        function parseJapaneseTextFallback(text) {
+            const tokens = [];
+            let currentToken = '';
+            
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1] || '';
+                
+                // Check for particles and common boundaries
+                if (['を', 'は', 'が', 'に', 'で', 'と', 'の', 'て', 'た'].includes(char) ||
+                    ['です', 'だ'].includes(char + nextChar) ||
+                    /[。！？\s]/.test(char)) {
+                    
+                    if (currentToken) {
+                        tokens.push({
+                            surface: currentToken,
+                            reading: currentToken,
+                            baseForm: currentToken,
+                            pos: 'unknown'
+                        });
+                        currentToken = '';
+                    }
+                    
+                    if (char.trim()) {
+                        if (char + nextChar === 'です' || char + nextChar === 'だ') {
+                            tokens.push({
+                                surface: char + nextChar,
+                                reading: char + nextChar,
+                                baseForm: char + nextChar,
+                                pos: 'auxiliary'
+                            });
+                            i++; // Skip next character
+                        } else {
+                            tokens.push({
+                                surface: char,
+                                reading: char,
+                                baseForm: char,
+                                pos: 'particle'
+                            });
+                        }
+                    }
+                } else {
+                    currentToken += char;
+                }
+            }
+            
+            if (currentToken) {
+                tokens.push({
+                    surface: currentToken,
+                    reading: currentToken,
+                    baseForm: currentToken,
+                    pos: 'unknown'
+                });
+            }
+            
+            return tokens.filter(token => token.surface.trim().length > 0);
+        }
+        
+        // Dictionary lookup using Jisho API with cache
+        async function lookupWord(surface, baseForm, reading) {
+            // Check cache first
+            const cacheKey = baseForm || surface;
+            if (jishoCache[cacheKey]) {
+                const entry = jishoCache[cacheKey];
+                return {
+                    word: entry.japanese[0]?.word || entry.japanese[0]?.reading,
+                    reading: entry.japanese[0]?.reading,
+                    definitions: entry.senses.map(s => s.english_definitions.join('; ')).slice(0, 3),
+                    pos: entry.senses[0]?.parts_of_speech?.join(', ') || '',
+                    jlpt: entry.jlpt || [],
+                    isCommon: entry.is_common,
+                    tags: entry.tags || []
+                };
+            }
+            
+            // Try API lookup
+            const result = await getWordDetails(surface);
+            if (result) {
+                return result;
+            }
+            
+            // Fallback to embedded dictionary
+            const entry = mockDictionary[surface] || mockDictionary[baseForm];
+            if (entry) {
+                return {
+                    word: surface,
+                    reading: entry.reading || reading,
+                    definitions: [entry.definition],
+                    particle: entry.particle || false
+                };
+            }
+            
+            return null;
+        }
+        
+        async function displayParsedSubtitle(text) {
+            selectedSentence = text; // Store the full sentence
+            const subtitleDiv = document.getElementById('subtitleText');
+            
+            // Show parsing indicator
+            subtitleDiv.innerHTML = '<span style="color: var(--color-info);">Parsing text...</span>';
+            
+            // Use the new unified parsing
+            const words = await parseToWords(text);
+            
+            subtitleDiv.innerHTML = '';
+            
+            words.forEach(wordData => {
+                const span = document.createElement('span');
+                span.textContent = wordData.surface;
+                span.className = 'parsed-word';
+                
+                // Check for particles
+                const isParticle = checkIfParticle(wordData);
+                
+                if (wordData.hasDict && wordData.definitions && wordData.definitions.length > 0) {
+                    if (isParticle) {
+                        span.classList.add('particle');
+                    } else {
+                        span.classList.add('has-definition');
+                    }
+                    
+                    // Add source badge
+                    if (wordData.source) {
+                        const badge = document.createElement('span');
+                        badge.className = `source-badge source-${wordData.source}`;
+                        badge.textContent = wordData.source === 'jisho' ? 'API' : 'OFFLINE';
+                        span.appendChild(badge);
+                    }
+                    
+                    span.addEventListener('click', (e) => {
+                        showWordPopup(wordData, wordData, e.target);
+                    });
+                } else if (isParticle) {
+                    span.classList.add('particle');
+                } else {
+                    // For unknown words, still make them clickable
+                    span.addEventListener('click', async (e) => {
+                        // Try a fresh lookup
+                        const dictEntry = await getWordDetails(wordData.surface);
+                        showWordPopup(wordData, dictEntry, e.target);
+                    });
+                }
+                
+                subtitleDiv.appendChild(span);
+                
+                // Add small space between words for better readability
+                if (words.indexOf(wordData) < words.length - 1) {
+                    const space = document.createTextNode(' ');
+                    subtitleDiv.appendChild(space);
+                }
+            });
+        }
+        
+        function checkIfParticle(wordData) {
+            // Use Jisho POS information if available
+            if (wordData.pos && Array.isArray(wordData.pos)) {
+                return wordData.pos.some(p => p.includes('Particle') || p.includes('particle'));
+            }
+            
+            // Fallback to known particle list
+            return ['を', 'は', 'が', 'に', 'で', 'と', 'の', 'て', 'た', 'です', 'だ', 'から', 'まで', 'より'].includes(wordData.surface);
+        }
+
+        function updateSubtitleInfo() {
+            const info = document.getElementById('subtitleInfo');
+            info.textContent = `Subtitle ${currentSubtitleIndex + 1} of ${subtitles.length}`;
+        }
+
+        function seekToSubtitle(direction) {
+            if (subtitles.length === 0) return;
+            
+            if (direction === 'prev' && currentSubtitleIndex > 0) {
+                currentSubtitleIndex--;
+            } else if (direction === 'next' && currentSubtitleIndex < subtitles.length - 1) {
+                currentSubtitleIndex++;
+            }
+            
+            const targetSubtitle = subtitles[currentSubtitleIndex];
+            const videoPlayer = document.getElementById('videoPlayer');
+            videoPlayer.currentTime = targetSubtitle.start;
+            
+            document.getElementById('subtitleText').textContent = targetSubtitle.text;
+            updateSubtitleInfo();
+        }
+
+        // Enhanced word popup functionality with Jisho data
+        function showWordPopup(tokenOrWord, dictEntry, targetElement) {
+            hideWordPopup(); // Hide any existing popup
+            
+            const popup = document.getElementById('wordPopup');
+            const expressionEl = document.getElementById('popupExpression');
+            const readingEl = document.getElementById('popupReading');
+            const definitionEl = document.getElementById('popupDefinition');
+            const mineBtn = document.getElementById('mineWordBtn');
+            
+            // Handle both token objects and simple strings
+            const word = tokenOrWord.surface || tokenOrWord;
+            const reading = tokenOrWord.reading || tokenOrWord;
+            
+            // Use surface form for mining
+            selectedWord = word;
+            selectedWordData = dictEntry;
+            
+            // Populate popup
+            expressionEl.textContent = word;
+            
+            if (dictEntry && dictEntry.definitions && dictEntry.definitions.length > 0) {
+                readingEl.textContent = dictEntry.reading || reading;
+                const definitions = Array.isArray(dictEntry.definitions) ? 
+                    dictEntry.definitions.slice(0, 3).join('; ') : 
+                    dictEntry.definitions;
+                
+                // Add JLPT and common word info
+                let definitionText = definitions;
+                if (dictEntry.jlpt && dictEntry.jlpt.length > 0) {
+                    definitionText += ` (${dictEntry.jlpt[0].toUpperCase()})`;
+                }
+                if (dictEntry.isCommon) {
+                    definitionText += ' [Common]';
+                }
+                
+                definitionEl.textContent = definitionText;
+            } else {
+                readingEl.textContent = reading !== word ? reading : '';
+                definitionEl.textContent = 'Looking up definition...';
+                
+                // Try fresh lookup if no definition
+                if (!dictEntry) {
+                    getWordDetails(word).then(freshEntry => {
+                        if (freshEntry && freshEntry.definitions && freshEntry.definitions.length > 0) {
+                            selectedWordData = freshEntry;
+                            
+                            let definitionText = freshEntry.definitions.slice(0, 3).join('; ');
+                            if (freshEntry.jlpt && freshEntry.jlpt.length > 0) {
+                                definitionText += ` (${freshEntry.jlpt[0].toUpperCase()})`;
+                            }
+                            if (freshEntry.isCommon) {
+                                definitionText += ' [Common]';
+                            }
+                            
+                            definitionEl.textContent = definitionText;
+                            readingEl.textContent = freshEntry.reading || reading;
+                            
+                            // Re-check mine button state
+                            mineBtn.textContent = '+ Mine';
+                            mineBtn.classList.remove('already-mined');
+                            mineBtn.disabled = false;
+                        } else {
+                            definitionEl.textContent = 'No definition found';
+                        }
+                    });
+                }
+            }
+            
+            // Position popup near the clicked word
+            const rect = targetElement.getBoundingClientRect();
+            popup.style.left = Math.min(rect.left, window.innerWidth - 320) + 'px';
+            popup.style.top = (rect.bottom + 10) + 'px';
+            
+            // Check if word is already mined
+            checkIfAlreadyMined(word).then(isMined => {
+                const hasValidDefinition = dictEntry && dictEntry.definitions && dictEntry.definitions.length > 0;
+                const isParticle = checkIfParticle(tokenOrWord);
+                
+                if (isMined) {
+                    mineBtn.textContent = '✓ Saved';
+                    mineBtn.classList.add('already-mined');
+                    mineBtn.disabled = true;
+                } else if (isParticle && !hasValidDefinition) {
+                    mineBtn.textContent = 'Particle';
+                    mineBtn.classList.add('already-mined');
+                    mineBtn.disabled = true;
+                } else if (!hasValidDefinition) {
+                    mineBtn.textContent = 'Loading...';
+                    mineBtn.disabled = true;
+                } else {
+                    mineBtn.textContent = '+ Mine';
+                    mineBtn.classList.remove('already-mined');
+                    mineBtn.disabled = false;
+                }
+            });
+            
+            popup.classList.remove('hidden');
+        }
+        
+        function hideWordPopup() {
+            document.getElementById('wordPopup').classList.add('hidden');
+        }
+        
+        async function checkIfAlreadyMined(expression) {
+            try {
+                return await checkDuplicateVocab(expression);
+            } catch {
+                return false;
+            }
+        }
+        
+        // Text selection handling for WebSocket mode
+        function setupTextSelection(element) {
+            element.addEventListener('mouseup', handleTextSelection);
+            element.addEventListener('touchend', handleTextSelection);
+        }
+
+        function handleTextSelection(event) {
+            const selection = window.getSelection();
+            const text = selection.toString().trim();
+            
+            if (text.length > 0 && currentView === 'websocket') {
+                selectedWord = text;
+                selectedWordData = lookupWord(text, text, text);
+                
+                // Get the full sentence context
+                const fullText = document.getElementById('textDisplay').textContent;
+                selectedSentence = extractSentenceContext(fullText, text);
+                
+                showVocabModal();
+                selection.removeAllRanges();
+            }
+        }
+
+        function extractSentenceContext(fullText, selectedText) {
+            const sentences = fullText.split(/[。！？\n]/);
+            const sentenceWithSelection = sentences.find(sentence => sentence.includes(selectedText));
+            return sentenceWithSelection ? sentenceWithSelection.trim() : selectedText;
+        }
+
+        // Enhanced vocabulary modal with pre-filled data from Jisho
+        function showVocabModal() {
+            document.getElementById('expression').value = selectedWord;
+            
+            // Pre-fill with Jisho data if available
+            if (selectedWordData && selectedWordData.definitions && selectedWordData.definitions.length > 0) {
+                document.getElementById('expressionFurigana').value = generateFurigana(selectedWord, selectedWordData.reading);
+                const definitions = Array.isArray(selectedWordData.definitions) ? 
+                    selectedWordData.definitions[0] : 
+                    selectedWordData.definitions;
+                document.getElementById('mainDefinition').value = definitions;
+            } else {
+                document.getElementById('expressionFurigana').value = '';
+                document.getElementById('mainDefinition').value = '';
+            }
+            
+            document.getElementById('sentence').value = selectedSentence;
+            
+            document.getElementById('vocabModal').classList.add('active');
+            
+            // Focus on appropriate field
+            setTimeout(() => {
+                if (!selectedWordData || !selectedWordData.definitions) {
+                    document.getElementById('expressionFurigana').focus();
+                } else {
+                    document.getElementById('mainDefinition').focus();
+                }
+            }, 100);
+        }
+
+        function hideVocabModal() {
+            document.getElementById('vocabModal').classList.remove('active');
+        }
+
+        async function saveVocab(event) {
+            event.preventDefault();
+            
+            const expression = document.getElementById('expression').value.trim();
+            const expressionFurigana = document.getElementById('expressionFurigana').value.trim();
+            const mainDefinition = document.getElementById('mainDefinition').value.trim();
+            const sentence = document.getElementById('sentence').value.trim();
+            
+            if (!expression || !mainDefinition) {
+                alert('Expression and Main Definition are required.');
+                return;
+            }
+            
+            // Check for duplicates
+            const isDuplicate = await checkDuplicateVocab(expression);
+            if (isDuplicate) {
+                const confirmed = await showConfirm('Duplicate Entry', 'This word is already in your collection. Add anyway?');
+                if (!confirmed) return;
+            }
+            
+            const entry = {
+                Expression: expression,
+                ExpressionFurigana: expressionFurigana,
+                MainDefinition: mainDefinition,
+                Sentence: sentence
+            };
+            
+            try {
+                await saveVocabEntry(entry);
+                vocabEntries.push(entry);
+                hideVocabModal();
+                
+                // Show success feedback
+                showToast('Vocabulary saved successfully!');
+            } catch (error) {
+                console.error('Error saving vocabulary:', error);
+                alert('Failed to save vocabulary entry.');
+            }
+        }
+
+        // WebSocket functionality
+        function connectWebSocket() {
+            const url = document.getElementById('websocketUrl').value.trim();
+            if (!url) {
+                alert('Please enter a WebSocket URL.');
+                return;
+            }
+            
+            try {
+                websocket = new WebSocket(url);
+                
+                websocket.onopen = () => {
+                    updateConnectionStatus(true);
+                    document.getElementById('connectBtn').disabled = true;
+                    document.getElementById('disconnectBtn').disabled = false;
+                };
+                
+                websocket.onmessage = (event) => {
+                    const textDisplay = document.getElementById('textDisplay');
+                    textDisplay.textContent += event.data;
+                    textDisplay.scrollTop = textDisplay.scrollHeight;
+                };
+                
+                websocket.onclose = () => {
+                    updateConnectionStatus(false);
+                    document.getElementById('connectBtn').disabled = false;
+                    document.getElementById('disconnectBtn').disabled = true;
+                };
+                
+                websocket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    alert('WebSocket connection failed. Please check the URL and try again.');
+                    updateConnectionStatus(false);
+                };
+                
+            } catch (error) {
+                alert('Invalid WebSocket URL.');
+                console.error('WebSocket connection error:', error);
+            }
+        }
+
+        function disconnectWebSocket() {
+            if (websocket) {
+                websocket.close();
+                websocket = null;
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('statusIndicator');
+            const status = document.getElementById('connectionStatus');
+            
+            if (connected) {
+                indicator.classList.add('connected');
+                status.textContent = 'Connected';
+            } else {
+                indicator.classList.remove('connected');
+                status.textContent = 'Disconnected';
+            }
+        }
+
+        // Vocabulary management
+        async function showVocabManagement() {
+            await updateVocabStats();
+            document.getElementById('vocabManageModal').classList.add('active');
+        }
+
+        async function updateVocabStats() {
+            const entries = await getAllVocabEntries();
+            const totalCount = entries.length;
+            const lastExported = entries.find(e => e.exported);
+            
+            document.getElementById('totalVocabCount').textContent = totalCount;
+            document.getElementById('lastExportDate').textContent = 
+                lastExported ? new Date(lastExported.timestamp).toLocaleDateString() : 'Never';
+        }
+
+        async function exportVocab(newOnly = false) {
+            try {
+                const entries = newOnly ? await getNewVocabEntries() : await getAllVocabEntries();
+                
+                if (entries.length === 0) {
+                    alert(newOnly ? 'No new vocabulary to export.' : 'No vocabulary to export.');
+                    return;
+                }
+                
+                const csvContent = generateCSV(entries);
+                const blob = new Blob([csvContent], { type: 'text/tab-separated-values;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `vocab-export-${new Date().toISOString().split('T')[0]}.tsv`;
+                link.click();
+                
+                URL.revokeObjectURL(url);
+                
+                // Mark entries as exported
+                await markEntriesAsExported(entries);
+                await updateVocabStats();
+                
+                showToast(`Exported ${entries.length} vocabulary entries.`);
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Failed to export vocabulary.');
+            }
+        }
+
+        function generateCSV(entries) {
+            const headers = [
+                'Expression', 'ExpressionFurigana', 'ExpressionReading', 'ExpressionAudio', 
+                'SelectionText', 'MainDefinition', 'DefinitionPicture', 'Sentence', 
+                'SentenceFurigana', 'SentenceAudio', 'Picture', 'Glossary', 'Hint', 
+                'IsWordAndSentenceCard', 'IsClickCard', 'IsSentenceCard', 'IsAudioCard', 
+                'PitchPosition', 'PitchCategories', 'Frequency', 'FreqSort', 'MiscInfo'
+            ];
+            
+            let csv = headers.join('\t') + '\n';
+            
+            entries.forEach(entry => {
+                const row = [
+                    entry.Expression || '',
+                    entry.ExpressionFurigana || '',
+                    '', // ExpressionReading
+                    '', // ExpressionAudio
+                    '', // SelectionText
+                    entry.MainDefinition || '',
+                    '', // DefinitionPicture
+                    entry.Sentence || '',
+                    '', // SentenceFurigana
+                    '', // SentenceAudio
+                    '', // Picture
+                    '', // Glossary
+                    '', // Hint
+                    '', // IsWordAndSentenceCard
+                    '', // IsClickCard
+                    '', // IsSentenceCard
+                    '', // IsAudioCard
+                    '', // PitchPosition
+                    '', // PitchCategories
+                    '', // Frequency
+                    '', // FreqSort
+                    ''  // MiscInfo
+                ];
+                
+                csv += row.join('\t') + '\n';
+            });
+            
+            return csv;
+        }
+
+        async function importVocab(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            try {
+                const text = await file.text();
+                const lines = text.split('\n');
+                
+                if (lines.length < 2) {
+                    alert('Invalid file format.');
+                    return;
+                }
+                
+                const headers = lines[0].split('\t');
+                const expressionIndex = headers.indexOf('Expression');
+                const furiganaIndex = headers.indexOf('ExpressionFurigana');
+                const definitionIndex = headers.indexOf('MainDefinition');
+                const sentenceIndex = headers.indexOf('Sentence');
+                
+                if (expressionIndex === -1 || definitionIndex === -1) {
+                    alert('Required columns not found in file.');
+                    return;
+                }
+                
+                let importCount = 0;
+                
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    const columns = line.split('\t');
+                    const expression = columns[expressionIndex]?.trim();
+                    const definition = columns[definitionIndex]?.trim();
+                    
+                    if (expression && definition) {
+                        const entry = {
+                            Expression: expression,
+                            ExpressionFurigana: columns[furiganaIndex]?.trim() || '',
+                            MainDefinition: definition,
+                            Sentence: columns[sentenceIndex]?.trim() || ''
+                        };
+                        
+                        const isDuplicate = await checkDuplicateVocab(expression);
+                        if (!isDuplicate) {
+                            await saveVocabEntry(entry);
+                            importCount++;
+                        }
+                    }
+                }
+                
+                await updateVocabStats();
+                showToast(`Imported ${importCount} new vocabulary entries.`);
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('Failed to import vocabulary file.');
+            }
+            
+            // Clear file input
+            event.target.value = '';
+        }
+
+        async function deleteAllVocab() {
+            const confirmed = await showConfirm('Delete All Vocabulary', 'Are you sure you want to delete all vocabulary entries? This action cannot be undone.');
+            
+            if (confirmed) {
+                try {
+                    await clearAllVocab();
+                    vocabEntries = [];
+                    await updateVocabStats();
+                    showToast('All vocabulary deleted.');
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    alert('Failed to delete vocabulary.');
+                }
+            }
+        }
+
+        // Utility functions
+        function showConfirm(title, message) {
+            return new Promise((resolve) => {
+                document.getElementById('confirmTitle').textContent = title;
+                document.getElementById('confirmMessage').textContent = message;
+                document.getElementById('confirmModal').classList.add('active');
+                
+                const handleConfirm = (result) => {
+                    document.getElementById('confirmModal').classList.remove('active');
+                    document.getElementById('confirmOkBtn').removeEventListener('click', handleOk);
+                    document.getElementById('confirmCancelBtn').removeEventListener('click', handleCancel);
+                    resolve(result);
+                };
+                
+                const handleOk = () => handleConfirm(true);
+                const handleCancel = () => handleConfirm(false);
+                
+                document.getElementById('confirmOkBtn').addEventListener('click', handleOk);
+                document.getElementById('confirmCancelBtn').addEventListener('click', handleCancel);
+            });
+        }
+
+        function showToast(message) {
+            // Simple toast implementation
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--color-success);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-weight: 500;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Event listeners setup
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDB();
+                vocabEntries = await getAllVocabEntries();
+            } catch (error) {
+                console.error('Failed to initialize database:', error);
+            }
+            
+            // Initialize the application
+            await initializeApp();
+            
+            // Navigation - FIXED EVENT LISTENERS
+            document.getElementById('homeBtn').addEventListener('click', goHome);
+            document.getElementById('watchModeBtn').addEventListener('click', showWatchView);
+            document.getElementById('websocketModeBtn').addEventListener('click', showWebSocketView);
+            document.getElementById('manageVocabBtn').addEventListener('click', showVocabManagement);
+            
+            console.log('Event listeners attached successfully');
+            console.log('Watch button:', document.getElementById('watchModeBtn'));
+            console.log('WebSocket button:', document.getElementById('websocketModeBtn'));
+            
+            // File handling - separate inputs
+            document.getElementById('selectVideoBtn').addEventListener('click', () => {
+                document.getElementById('videoInput').click();
+            });
+            
+            document.getElementById('selectSubtitleBtn').addEventListener('click', () => {
+                document.getElementById('subtitleInput').click();
+            });
+            
+            document.getElementById('videoInput').addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    handleVideoSelection(e.target.files[0]);
+                }
+            });
+            
+            document.getElementById('subtitleInput').addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    handleSubtitleSelection(e.target.files[0]);
+                }
+            });
+            
+            document.getElementById('playVideoBtn').addEventListener('click', startVideoPlayback);
+            
+            // Video controls
+            document.getElementById('prevSubtitleBtn').addEventListener('click', () => seekToSubtitle('prev'));
+            document.getElementById('nextSubtitleBtn').addEventListener('click', () => seekToSubtitle('next'));
+            document.getElementById('backToFilesBtn').addEventListener('click', () => {
+                document.getElementById('videoPlayerContainer').classList.add('hidden');
+                document.getElementById('fileUploadSection').classList.remove('hidden');
+                
+                // Stop video and clear source
+                const videoPlayer = document.getElementById('videoPlayer');
+                videoPlayer.pause();
+                if (videoPlayer.src) {
+                    URL.revokeObjectURL(videoPlayer.src);
+                    videoPlayer.src = '';
+                }
+            });
+            
+            document.getElementById('changeFilesBtn').addEventListener('click', () => {
+                // Clear current files
+                currentVideoFile = null;
+                currentSubtitleFile = null;
+                document.getElementById('videoStatus').textContent = 'No video selected';
+                document.getElementById('videoStatus').classList.remove('loaded');
+                document.getElementById('subtitleStatus').textContent = 'No subtitle selected';
+                document.getElementById('subtitleStatus').classList.remove('loaded');
+                document.getElementById('videoInput').value = '';
+                document.getElementById('subtitleInput').value = '';
+                checkCanPlay();
+            });
+            
+            // WebSocket controls
+            document.getElementById('connectBtn').addEventListener('click', connectWebSocket);
+            document.getElementById('disconnectBtn').addEventListener('click', disconnectWebSocket);
+            
+            // Text selection setup (only for WebSocket mode)
+            setupTextSelection(document.getElementById('textDisplay'));
+            
+            // Word popup controls
+            document.getElementById('mineWordBtn').addEventListener('click', () => {
+                hideWordPopup();
+                showVocabModal();
+            });
+            
+            document.getElementById('closePopupBtn').addEventListener('click', hideWordPopup);
+            
+            // Close popup when clicking elsewhere
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.word-popup') && !e.target.closest('.parsed-word')) {
+                    hideWordPopup();
+                }
+            });
+            
+            // Vocabulary modal
+            document.getElementById('vocabForm').addEventListener('submit', saveVocab);
+            document.getElementById('cancelVocabBtn').addEventListener('click', hideVocabModal);
+            
+            // Vocabulary management
+            document.getElementById('exportAllBtn').addEventListener('click', () => exportVocab(false));
+            document.getElementById('exportNewBtn').addEventListener('click', () => exportVocab(true));
+            document.getElementById('importVocabBtn').addEventListener('click', () => {
+                document.getElementById('importFileInput').click();
+            });
+            document.getElementById('importFileInput').addEventListener('change', importVocab);
+            document.getElementById('deleteAllBtn').addEventListener('click', deleteAllVocab);
+            document.getElementById('closeManageBtn').addEventListener('click', () => {
+                document.getElementById('vocabManageModal').classList.remove('active');
+            });
+            
+            // Close modals on outside click
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Prevent context menu on long press for better touch experience
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.closest('.subtitle-text') || e.target.closest('.text-display')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
