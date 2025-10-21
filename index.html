@@ -16,6 +16,8 @@
             background: #000;
             color: #fff;
             overflow: hidden;
+            height: 100vh;
+            width: 100vw;
         }
         
         .container {
@@ -24,43 +26,54 @@
             width: 100vw;
         }
         
-        /* Video Side */
+        /* Video Side - FIXED, NO SCROLL */
         .video-panel {
             flex: 6;
             display: flex;
             flex-direction: column;
             background: #000;
             padding: 20px;
+            padding-top: calc(60px + env(safe-area-inset-top)); /* Space for Manabi URL bar */
+            overflow: hidden; /* CRITICAL: Prevents scrolling */
+        }
+        
+        .video-container {
+            flex-shrink: 0;
+            margin-bottom: 20px;
         }
         
         #video-player {
             width: 100%;
             height: auto;
-            max-height: 70vh;
+            max-height: 60vh;
             background: #000;
             border-radius: 8px;
         }
         
         .controls {
-            margin-top: 20px;
+            flex-shrink: 0;
             display: flex;
             gap: 15px;
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
+            padding: 15px 0;
         }
         
-        /* Transcript Side */
+        /* Transcript Side - SCROLLABLE */
         .transcript-panel {
             flex: 4;
             background: #1c1c1e;
             display: flex;
             flex-direction: column;
             border-left: 1px solid #38383a;
+            overflow: hidden; /* Container doesn't scroll */
         }
         
         .transcript-header {
+            flex-shrink: 0;
             padding: 20px;
+            padding-top: calc(20px + env(safe-area-inset-top));
             background: #2c2c2e;
             border-bottom: 1px solid #38383a;
         }
@@ -75,9 +88,11 @@
             color: #98989d;
         }
         
+        /* THIS is the scrollable container */
         .transcript-content {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: auto; /* ONLY this scrolls */
+            overflow-x: hidden;
             padding: 20px;
             scroll-behavior: smooth;
         }
@@ -86,12 +101,13 @@
             padding: 15px;
             margin-bottom: 8px;
             border-radius: 8px;
-            cursor: pointer;
             transition: all 0.2s;
             user-select: text;
             -webkit-user-select: text;
+            cursor: text; /* Changed from pointer - indicates no click action */
         }
         
+        /* Remove hover effect since clicking does nothing */
         .transcript-item:hover {
             background: #2c2c2e;
         }
@@ -110,6 +126,7 @@
             color: #98989d;
             margin-bottom: 5px;
             font-weight: 500;
+            pointer-events: none; /* Can't interact with timestamp */
         }
         
         .transcript-item.active .transcript-timestamp {
@@ -149,10 +166,15 @@
             color: white;
             cursor: pointer;
             font-weight: 500;
+            flex-shrink: 0;
         }
         
         button:hover {
             background: #0051D5;
+        }
+        
+        button:active {
+            background: #003d99;
         }
         
         .subtitle-counter {
@@ -162,6 +184,7 @@
             background: #1c1c1e;
             border-radius: 8px;
             color: #fff;
+            flex-shrink: 0;
         }
         
         /* Upload Screen */
@@ -176,6 +199,7 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            overflow-y: auto;
         }
         
         .upload-container {
@@ -184,6 +208,7 @@
             border-radius: 16px;
             max-width: 600px;
             width: 90%;
+            margin: 20px;
         }
         
         .upload-container h1 {
@@ -218,20 +243,26 @@
             font-size: 14px;
         }
         
-        /* Responsive */
+        /* Responsive - Stack vertically on small screens */
         @media (max-width: 1024px) {
             .container {
                 flex-direction: column;
             }
             
             .video-panel {
-                flex: 1;
+                flex: 0 0 auto;
+                max-height: 50vh;
+                padding-bottom: 10px;
             }
             
             .transcript-panel {
                 flex: 1;
                 border-left: none;
                 border-top: 1px solid #38383a;
+            }
+            
+            #video-player {
+                max-height: 40vh;
             }
         }
         
@@ -395,9 +426,11 @@
     
     <!-- Player Screen -->
     <div id="player-screen" class="container" style="display: none;">
-        <!-- Video Panel -->
+        <!-- Video Panel - FIXED -->
         <div class="video-panel">
-            <video id="video-player" controls></video>
+            <div class="video-container">
+                <video id="video-player" controls></video>
+            </div>
             
             <div class="controls">
                 <button id="prev-btn">⬅️ Previous</button>
@@ -410,7 +443,7 @@
         <div class="transcript-panel">
             <div class="transcript-header">
                 <h2>Transcript</h2>
-                <p class="transcript-info">Click any subtitle to jump to that timestamp • Select text for Manabi Reader</p>
+                <p class="transcript-info">Select text to copy for Manabi Reader • Use arrows to navigate</p>
             </div>
             
             <div id="transcript-content" class="transcript-content">
@@ -564,10 +597,8 @@
                 item.appendChild(timestamp);
                 item.appendChild(text);
                 
-                // Click to jump to timestamp
-                item.addEventListener('click', () => {
-                    jumpToSubtitle(index);
-                });
+                // NO click event - subtitles are read-only
+                // Users can only select text, not click to seek
                 
                 container.appendChild(item);
             });
@@ -600,8 +631,18 @@
                 
                 if (index === currentIndex) {
                     item.classList.add('active');
-                    // Scroll to active item
-                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Scroll ONLY the transcript container
+                    const transcriptContainer = document.getElementById('transcript-content');
+                    const itemTop = item.offsetTop;
+                    const itemHeight = item.offsetHeight;
+                    const containerHeight = transcriptContainer.clientHeight;
+                    
+                    // Center the active item
+                    const scrollTo = itemTop - (containerHeight / 2) + (itemHeight / 2);
+                    transcriptContainer.scrollTo({
+                        top: scrollTo,
+                        behavior: 'smooth'
+                    });
                 } else if (index < currentIndex) {
                     item.classList.add('past');
                 }
